@@ -220,6 +220,7 @@
 
     # Общение
     telegram-desktop discord thunderbird
+    teamspeak6-client
 
     # Медиа
     vlc obs-studio
