@@ -220,7 +220,7 @@
     firefox chromium
 
     # Общение
-    telegram-desktop discord vesktop thunderbird
+    telegram-desktop discord thunderbird
 
     # Медиа
     vlc obs-studio kdenlive krita inkscape
@@ -230,7 +230,8 @@
     onlyoffice-desktopeditors obsidian
 
     # Разработка
-    vscode dbeaver-bin filezilla putty
+    vscode code-cursor google-antigravity
+    dbeaver-bin filezilla putty
     docker-compose android-studio
     jetbrains.idea-community
     jetbrains.pycharm-community

@@ -10,13 +10,23 @@
     };
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
+
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, nix-flatpak, ... }: {
+  outputs = { nixpkgs, home-manager, nix-flatpak, antigravity-nix, ... }: {
     nixosConfigurations.seevser-nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ./nixos-configuration.nix
+
+        # Google Antigravity IDE (overlay)
+        {
+          nixpkgs.overlays = [ antigravity-nix.overlays.default ];
+        }
 
         # Декларативный Flatpak
         nix-flatpak.nixosModules.nix-flatpak
