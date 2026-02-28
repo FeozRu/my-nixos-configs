@@ -225,8 +225,8 @@
     vlc obs-studio
     yandex-music
     vlc obs-studio inkscape
-    # kdePackages.kdenlive  # kdenlive часто ломается вместе с krita
-    # krita                 # сломан в nixos-unstable (Boost 1.89)
+    #krita # Krita is broken
+    kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
 
     # Офис
