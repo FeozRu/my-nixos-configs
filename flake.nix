@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -17,9 +18,15 @@
     };
   };
 
-  outputs = { nixpkgs, home-manager, nix-flatpak, antigravity-nix, ... }: {
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, ... }: {
     nixosConfigurations.seevser-nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = {
+        pkgs-stable = import nixpkgs-stable {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+      };
       modules = [
         ./nixos-configuration.nix
 

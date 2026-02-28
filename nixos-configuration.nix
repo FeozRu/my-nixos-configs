@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, pkgs-stable, lib, ... }:
 
 {
   imports = [
@@ -225,7 +225,7 @@
     vlc obs-studio
     yandex-music
     vlc obs-studio inkscape
-    #krita # Krita is broken
+    pkgs-stable.krita
     kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
 
