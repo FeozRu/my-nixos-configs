@@ -225,6 +225,7 @@ sudo nixos-rebuild switch --flake ~/nix-configs-git#seevser-nixos
 {
   imports = [
     ./hardware-configuration.nix
+    ./bluetooth-keys.nix
   ];
 
   # ========================
@@ -333,6 +334,7 @@ sudo nixos-rebuild switch --flake ~/nix-configs-git#seevser-nixos
     enable = true;
     powerOnBoot = true;
   };
+  # Ключи сопряжения для dual-boot (Linux + Windows) → bluetooth-keys.nix
 
   # ========================
   # Виртуализация
@@ -663,6 +665,7 @@ Flakes заменяют каналы и обеспечивают воспрои�
 ├── flake.lock                 # Зафиксированные версии inputs (авто)
 ├── nixos-configuration.nix    # Системный конфиг
 ├── nixos-home.nix             # Пользовательский конфиг (Home Manager)
+├── bluetooth-keys.nix         # Bluetooth ключи для dual-boot (Linux + Windows)
 ├── hardware-configuration.nix # Скопировать из /etc/nixos/ после установки
 └── nixos-migration-guide.md   # Эта инструкция
 ```
