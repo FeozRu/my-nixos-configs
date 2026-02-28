@@ -157,6 +157,8 @@
       nerd-fonts.jetbrains-mono
       nerd-fonts.fira-code
       nerd-fonts.meslo-lg
+      corefonts
+      vista-fonts
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif" ];
