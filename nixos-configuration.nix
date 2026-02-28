@@ -222,7 +222,11 @@
     telegram-desktop discord thunderbird
 
     # Медиа
-    vlc obs-studio kdePackages.kdenlive krita inkscape
+    vlc obs-studio
+    yandex-music
+    vlc obs-studio inkscape
+    # kdePackages.kdenlive  # kdenlive часто ломается вместе с krita
+    # krita                 # сломан в nixos-unstable (Boost 1.89)
     kdePackages.gwenview shotwell kdePackages.elisa
 
     # Офис
@@ -234,7 +238,7 @@
     docker-compose android-studio
     jetbrains.idea-oss
     jetbrains.pycharm-oss
-    jetbrains.rider
+    # jetbrains.rider  # временно убран — JetBrains блокирует скачивание (HTTP 451)
 
     # Языки / SDK
     dotnet-sdk_8 jdk17 jdk21 deno
@@ -283,9 +287,7 @@
     packages = [
       "org.gimp.GIMP"                    # GIMP (PhotoGIMP)
       "io.mrarm.mcpelauncher"            # Minecraft Bedrock Launcher
-      "com.hypixel.HytaleLauncher"       # Hytale Launcher
       "com.poweriso.PowerISO"            # PowerISO
-      "io.github.recol.dlss-updater"     # DLSS Updater
       "com.ml4w.dotfilesinstaller"       # Dotfiles Installer
     ];
   };
