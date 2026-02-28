@@ -230,4 +230,16 @@
   # Управление home-manager
   # ========================
   programs.home-manager.enable = true;
+
+
+  # ========================
+  # Pointer cursor
+  # ========================
+  home.pointerCursor = {
+    name = "breeze_cursors";
+    package = pkgs.kdePackages.breeze;
+    size = 24;
+    gtk.enable = true;
+    x11.enable = true;
+  };
 }
