@@ -375,7 +375,9 @@ sudo nixos-rebuild switch --flake ~/nix-configs-git#seevser-nixos
       noto-fonts-emoji
       joypixels
       meslo-lgs-nf  # Для Powerlevel10k
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "Meslo" ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.fira-code
+      nerd-fonts.meslo-lg
     ];
   };
 
@@ -541,6 +543,12 @@ sudo nixos-rebuild switch --flake ~/nix-configs-git#seevser-nixos
     remmina
     ventoy
   ];
+
+  # AppImage
+  programs.appimage = {
+    enable = true;
+    binfmt = true;  # Запуск AppImage напрямую
+  };
 
   # ========================
   # Flatpak (декларативный, через nix-flatpak)
@@ -822,14 +830,15 @@ boot.kernelParams = [ "nvidia-drm.modeset=1" "nvidia-drm.fbdev=1" ];
 ### Пакета нет в nixpkgs
 
 Варианты:
-1. **Flatpak** — `services.flatpak.enable = true;`, затем `flatpak install`.
-2. **AppImage** — запусти через `appimage-run`:
+1. **Flatpak** — декларативно через `nix-flatpak` (см. секцию Flatpak в конфиге).
+2. **AppImage** — включи поддержку в конфиге:
    ```nix
-   environment.systemPackages = [ pkgs.appimage-run ];
+   programs.appimage = {
+     enable = true;
+     binfmt = true;  # Запуск .AppImage напрямую
+   };
    ```
-   ```bash
-   appimage-run ./SomeApp.AppImage
-   ```
+   После этого AppImage-файлы можно запускать напрямую: `./SomeApp.AppImage`.
 3. **nix-alien** — запуск бинарников, собранных не для NixOS.
 
 ### Steam / игры не запускаются
@@ -876,36 +885,34 @@ hardware.xpadneo.enable = true;
 ## Полезные команды
 
 ```bash
-# ==== Системное управление ====
-sudo nixos-rebuild switch          # Применить изменения
-sudo nixos-rebuild switch --upgrade # Обновить каналы + применить
-sudo nixos-rebuild boot            # Применить после перезагрузки
-sudo nixos-rebuild test            # Применить без добавления в GRUB
+# ==== Системное управление (flakes) ====
+sudo nixos-rebuild switch --flake ~/nix-configs-git#seevser-nixos   # Применить изменения
+sudo nixos-rebuild boot --flake ~/nix-configs-git#seevser-nixos     # Применить после перезагрузки
+sudo nixos-rebuild test --flake ~/nix-configs-git#seevser-nixos     # Применить без добавления в GRUB
+
+# ==== Обновление inputs ====
+nix flake update --flake ~/nix-configs-git                         # Обновить все inputs
+nix flake update nixpkgs --flake ~/nix-configs-git                 # Обновить только nixpkgs
+nix flake metadata ~/nix-configs-git                               # Посмотреть версии inputs
 
 # ==== Откат ====
 # При загрузке в GRUB — выбери предыдущее поколение
 sudo nix-env --list-generations --profile /nix/var/nix/profiles/system
 sudo nixos-rebuild switch --rollback
 
-# ==== Каналы ====
-sudo nix-channel --list
-sudo nix-channel --update
-
 # ==== Поиск пакетов ====
-nix search nixpkgs firefox         # Поиск пакета
-nix-env -qaP | grep firefox        # Альтернатива
+nix search nixpkgs firefox                                         # Поиск пакета
 
 # ==== Очистка ====
-sudo nix-collect-garbage -d        # Удалить все старые поколения
-sudo nix-store --optimise          # Дедупликация /nix/store
+sudo nix-collect-garbage -d                                        # Удалить все старые поколения
+sudo nix-store --optimise                                          # Дедупликация /nix/store
 
 # ==== Попробовать пакет без установки ====
-nix-shell -p cowsay --run "cowsay hello"
-nix run nixpkgs#cowsay -- "hello"  # С flakes
+nix run nixpkgs#cowsay -- "hello"
+nix shell nixpkgs#python3                                          # Открыть shell с пакетом
 
 # ==== Информация ====
-nixos-version                      # Текущая версия NixOS
-nixos-option services.docker       # Документация к опции
+nixos-version                                                      # Текущая версия NixOS
 ```
 
 ---

@@ -154,7 +154,9 @@
       noto-fonts-emoji
       joypixels
       meslo-lgs-nf
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "FiraCode" "Meslo" ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.fira-code
+      nerd-fonts.meslo-lg
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif" ];
@@ -262,8 +264,13 @@
     bitwarden-desktop keepassxc qbittorrent
     kooha qpwgraph
     nvidia-vaapi-driver lact
-    appimage-run  # Для запуска AppImage
   ];
+
+  # AppImage
+  programs.appimage = {
+    enable = true;
+    binfmt = true;  # Запуск AppImage напрямую
+  };
 
   # ========================
   # Flatpak (декларативный, через nix-flatpak)
