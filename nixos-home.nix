@@ -224,6 +224,8 @@
     LC_MEASUREMENT  = "ru_RU.UTF-8";
     LC_TIME         = "ru_RU.UTF-8";
     LC_NUMERIC      = "ru_RU.UTF-8";
+    XCURSOR_THEME = "breeze_cursors";
+    XCURSOR_SIZE = "24";
   };
 
   # ========================
