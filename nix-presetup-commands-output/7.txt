@@ -1,0 +1,13 @@
+❯ ls /boot/EFI/ 2>/dev/null || ls /boot/grub/ 2>/dev/null; bootctl status 2>/dev/null | head -10
+
+BOOT  EFI  GRUB  Microsoft
+System:
+      Firmware: n/a (n/a)
+ Firmware Arch: x64
+   Secure Boot: disabled
+  TPM2 Support: yes
+  Measured UKI: no
+  Boot into FW: supported
+
+Current Boot Loader:
+       Product: GRUB 2.13

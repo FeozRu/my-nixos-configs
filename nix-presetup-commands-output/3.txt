@@ -1,0 +1,4 @@
+❯ echo $XDG_CURRENT_DESKTOP && echo $XDG_SESSION_TYPE
+
+KDE
+wayland

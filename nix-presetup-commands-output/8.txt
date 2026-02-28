@@ -1,0 +1,35 @@
+❯ systemctl list-unit-files --state=enabled --no-pager | head -40
+
+UNIT FILE                          STATE   PRESET
+AmneziaVPN.service                 enabled disabled
+anydesk.service                    enabled disabled
+bluetooth.service                  enabled disabled
+docker.service                     enabled disabled
+getty@.service                     enabled enabled
+lactd.service                      enabled disabled
+libvirtd.service                   enabled disabled
+NetworkManager-dispatcher.service  enabled disabled
+NetworkManager-wait-online.service enabled disabled
+NetworkManager.service             enabled disabled
+nvidia-hibernate.service           enabled disabled
+nvidia-resume.service              enabled disabled
+nvidia-suspend.service             enabled disabled
+outline_proxy_controller.service   enabled disabled
+sddm.service                       enabled disabled
+systemd-timesyncd.service          enabled enabled
+v2raya.service                     enabled disabled
+zapret.service                     enabled disabled
+libvirtd-admin.socket              enabled disabled
+libvirtd-ro.socket                 enabled disabled
+libvirtd.socket                    enabled disabled
+systemd-userdbd.socket             enabled enabled
+virtlockd-admin.socket             enabled disabled
+virtlockd.socket                   enabled disabled
+virtlogd-admin.socket              enabled disabled
+virtlogd.socket                    enabled disabled
+remote-fs.target                   enabled enabled
+snapper-cleanup.timer              enabled disabled
+snapper-timeline.timer             enabled disabled
+zapret-list-update.timer           enabled disabled
+
+30 unit files listed.

@@ -1,0 +1,16 @@
+❯ lsblk -f
+
+NAME        FSTYPE FSVER LABEL   UUID                                 FSAVAIL FSUSE% MOUNTPOINTS
+sda                                                                                  
+├─sda1      vfat   FAT32         22ED-2669                             842,9M    18% /boot
+└─sda2      btrfs                d043f059-c069-4ba6-a54e-f0891bc4e3a4  732,5G    21% /
+sdb                                                                                  
+├─sdb1                                                                               
+├─sdb2      ntfs                 B8200662200627C8                                    
+└─sdb3      ntfs                 FC4E10B74E106D20                                    
+sdc                                                                                  
+├─sdc1      exfat  1.0   Ventoy  3623-193E                                           
+└─sdc2      vfat   FAT16 VTOYEFI 8EC5-A8F5                                           
+zram0       swap   1     zram0   760e1c08-d645-4023-bc76-9911938e4065                [SWAP]
+nvme0n1                                                                              
+└─nvme0n1p1 btrfs                cac18b4e-3d53-48fe-b12e-65d91a62ef6c  109,2G    88% /home
