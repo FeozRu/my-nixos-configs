@@ -88,7 +88,7 @@
 
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-kde ];
+    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
   };
 
   # ========================
@@ -125,7 +125,6 @@
       qemu = {
         package = pkgs.qemu_kvm;
         swtpm.enable = true;
-        ovmf.enable = true;
       };
     };
   };
@@ -152,7 +151,7 @@
     packages = with pkgs; [
       noto-fonts
       noto-fonts-cjk-sans
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       joypixels
       meslo-lgs-nf
       nerd-fonts.jetbrains-mono
@@ -186,7 +185,6 @@
       "docker"
       "libvirtd"
       "kvm"
-      "adbusers"
       "video"
     ];
     shell = pkgs.zsh;
@@ -212,10 +210,10 @@
     smartmontools tcpdump
 
     # Терминал
-    kitty thefuck
+    kitty
 
     # Файловые менеджеры
-    dolphin
+    kdePackages.dolphin
 
     # Браузеры
     firefox chromium
@@ -224,8 +222,8 @@
     telegram-desktop discord thunderbird
 
     # Медиа
-    vlc obs-studio kdenlive krita inkscape
-    gwenview shotwell elisa
+    vlc obs-studio kdePackages.kdenlive krita inkscape
+    kdePackages.gwenview shotwell kdePackages.elisa
 
     # Офис
     onlyoffice-desktopeditors obsidian
@@ -234,8 +232,8 @@
     vscode code-cursor google-antigravity
     dbeaver-bin filezilla putty
     docker-compose android-studio
-    jetbrains.idea-community
-    jetbrains.pycharm-community
+    jetbrains.idea-oss
+    jetbrains.pycharm-oss
     jetbrains.rider
 
     # Языки / SDK
@@ -245,9 +243,12 @@
     # Сборка
     clang cmake ninja pkg-config gnumake gcc
 
+    # Android
+    android-tools
+
     # KDE
-    ark kate konsole kdeconnect-kde
-    kalk krdc kpat
+    kdePackages.ark kdePackages.kate kdePackages.konsole kdePackages.kdeconnect-kde
+    kdePackages.kalk kdePackages.krdc kdePackages.kpat
 
     # Сеть
     wireguard-tools networkmanager-openvpn
@@ -289,10 +290,6 @@
     ];
   };
 
-  # ========================
-  # Android (ADB)
-  # ========================
-  programs.adb.enable = true;
 
   # ========================
   # V2RayA

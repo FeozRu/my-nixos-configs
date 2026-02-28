@@ -22,9 +22,9 @@
   # ========================
   programs.git = {
     enable = true;
-    userName = "Sebyanin";
-    userEmail = "feozru@yahoo.com";
-    extraConfig = {
+    settings = {
+      user.name = "Sebyanin";
+      user.email = "feozru@yahoo.com";
       credential.helper = "store";
       init.defaultBranch = "main";
       pull.rebase = false;
@@ -36,6 +36,7 @@
   # ========================
   programs.zsh = {
     enable = true;
+    dotDir = "${config.xdg.configHome}/zsh";
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     enableCompletion = true;
@@ -52,7 +53,7 @@
       plugins = [ "git" "extract" ];
     };
 
-    initExtra = ''
+    initContent = ''
       # === Powerlevel10k instant prompt ===
       if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
         source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
@@ -160,9 +161,9 @@
   };
 
   # ========================
-  # Thefuck
+  # Pay-respects (замена thefuck)
   # ========================
-  programs.thefuck = {
+  programs.pay-respects = {
     enable = true;
     enableZshIntegration = true;
   };
