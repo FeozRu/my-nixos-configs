@@ -269,6 +269,7 @@
     # Игры
     lutris heroic prismlauncher
     gamescope wine winetricks
+    steamtinkerlaunch xdotool
 
     # Прочее
     bitwarden-desktop keepassxc qbittorrent
