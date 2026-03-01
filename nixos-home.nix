@@ -255,18 +255,16 @@
     # Ставим 120 (125%) или 144 (150%). Начнем с 120.
     SKYRIM_PFX="$HOME/.local/share/Steam/steamapps/compatdata/489830/pfx"
     if [ -d "$SKYRIM_PFX" ]; then
-      # Используем прямое редактирование файлов реестра или wine reg
-      # Для стабильности просто создаем временный .reg файл и применяем его
-      cat > /tmp/stl-dpi.reg <<EOF
+      REG_FILE="$HOME/.config/steamtinkerlaunch/stl-dpi.reg"
+      cat > "$REG_FILE" <<EOF
 Windows Registry Editor Version 5.00
 
 [HKEY_CURRENT_USER\Control Panel\Desktop]
 "LogPixels"=dword:00000078
 EOF
-      # Пытаемся применить через steam-run wine, если префикс уже существует
-      # Мы используем || true, чтобы не ломать активацию если wine еще не настроен
-      /run/current-system/sw/bin/steam-run /run/current-system/sw/bin/wine regedit /tmp/stl-dpi.reg || true
-      rm /tmp/stl-dpi.reg
+      # Важно: задаем WINEPREFIX, иначе regedit пойдет в ~/.wine
+      # Используем env для надежности
+      env WINEPREFIX="$SKYRIM_PFX" /run/current-system/sw/bin/steam-run /run/current-system/sw/bin/wine regedit "$REG_FILE" || true
     fi
   '';
 
