@@ -281,7 +281,13 @@
       fi
     '')
     (pkgs.writeShellScriptBin "steamtinkerlaunch" ''
-      exec ${pkgs.steam-run}/bin/steam-run ${pkgs.steamtinkerlaunch}/bin/steamtinkerlaunch "$@"
+      # Запускаем STL и фоновый слушатель NXM в одном FHS контейнере
+      exec ${pkgs.steam-run}/bin/steam-run bash -c '
+        /home/seevser/.config/steamtinkerlaunch/custom/nxm-listener.sh &
+        LPID=$!
+        ${pkgs.steamtinkerlaunch}/bin/steamtinkerlaunch "$@"
+        kill $LPID 2>/dev/null
+      ' -- "steamtinkerlaunch" "$@"
     '')
     xdotool yad
 
