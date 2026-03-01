@@ -227,6 +227,7 @@
     # Общение
     telegram-desktop discord thunderbird
     teamspeak6-client
+    vesktop
 
     # Медиа
     vlc obs-studio
