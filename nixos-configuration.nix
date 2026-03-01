@@ -273,7 +273,17 @@
     # Игры
     lutris heroic prismlauncher
     gamescope wine winetricks
-    steamtinkerlaunch xdotool yad
+    (pkgs.writeShellScriptBin "innoextract" ''
+      if [[ "$1" == "--version" ]]; then
+        ${pkgs.innoextract}/bin/innoextract "$@" | sed 's/-dev//g'
+      else
+        exec ${pkgs.innoextract}/bin/innoextract "$@"
+      fi
+    '')
+    (pkgs.writeShellScriptBin "steamtinkerlaunch" ''
+      exec ${pkgs.steam-run}/bin/steam-run ${pkgs.steamtinkerlaunch}/bin/steamtinkerlaunch "$@"
+    '')
+    xdotool yad
 
     # Прочее
     bitwarden-desktop keepassxc qbittorrent

@@ -220,14 +220,55 @@
           exec yad "$@"
         '';
       };
-      
-      "steamtinkerlaunch/global.conf" = {
-        text = ''
-          YAD="/home/seevser/.config/steamtinkerlaunch/custom/yad-wrapper.sh"
-        '';
-      };
     };
   };
+
+  # Создаем global.conf как копию, чтобы STL мог в него писать, а не симлинк
+  # Также исправляем симлинк в Steam, чтобы он использовал наш wrapper с steam-run
+  home.activation.steamtinkerlaunchConf = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    # 1. Исправляем конфиг (YAD, путь к шрифтам и Proton для MO2)
+    mkdir -p ~/.config/steamtinkerlaunch
+    touch ~/.config/steamtinkerlaunch/global.conf
+    if ! grep -q 'YAD=' ~/.config/steamtinkerlaunch/global.conf 2>/dev/null; then
+      echo 'YAD="/home/seevser/.config/steamtinkerlaunch/custom/yad-wrapper.sh"' >> ~/.config/steamtinkerlaunch/global.conf
+    else
+      sed -i 's|^YAD=.*|YAD="/home/seevser/.config/steamtinkerlaunch/custom/yad-wrapper.sh"|' ~/.config/steamtinkerlaunch/global.conf || true
+    fi
+
+    if ! grep -q 'USEMO2PROTON=' ~/.config/steamtinkerlaunch/global.conf 2>/dev/null; then
+      echo 'USEMO2PROTON="Proton-CachyOS Latest"' >> ~/.config/steamtinkerlaunch/global.conf
+    else
+      sed -i 's|^USEMO2PROTON=.*|USEMO2PROTON="Proton-CachyOS Latest"|' ~/.config/steamtinkerlaunch/global.conf || true
+    fi
+
+    # 2. Исправляем интеграцию со Steam (перенаправляем на наш wrapper)
+    STL_STEAM_DIR="$HOME/.local/share/Steam/compatibilitytools.d/SteamTinkerLaunch"
+    if [ -d "$STL_STEAM_DIR" ]; then
+      ln -sf /run/current-system/sw/bin/steamtinkerlaunch "$STL_STEAM_DIR/steamtinkerlaunch"
+    fi
+
+    # 3. Удаляем старые блокировки MO2
+    rm -f /dev/shm/steamtinkerlaunch/ModOrganizer-failed.txt || true
+
+    # 4. Исправляем DPI (размер шрифтов) для MO2 (Skyrim SE - 489830)
+    # По умолчанию Wine использует 96 DPI, что слишком мелко на 2K/4K. 
+    # Ставим 120 (125%) или 144 (150%). Начнем с 120.
+    SKYRIM_PFX="$HOME/.local/share/Steam/steamapps/compatdata/489830/pfx"
+    if [ -d "$SKYRIM_PFX" ]; then
+      # Используем прямое редактирование файлов реестра или wine reg
+      # Для стабильности просто создаем временный .reg файл и применяем его
+      cat > /tmp/stl-dpi.reg <<EOF
+Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Control Panel\Desktop]
+"LogPixels"=dword:00000078
+EOF
+      # Пытаемся применить через steam-run wine, если префикс уже существует
+      # Мы используем || true, чтобы не ломать активацию если wine еще не настроен
+      /run/current-system/sw/bin/steam-run /run/current-system/sw/bin/wine regedit /tmp/stl-dpi.reg || true
+      rm /tmp/stl-dpi.reg
+    fi
+  '';
 
   # ========================
   # Локализация (переменные окружения)
