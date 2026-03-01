@@ -148,6 +148,7 @@
   # ========================
   fonts = {
     enableDefaultPackages = true;
+    fontDir.enable = true;
     packages = with pkgs; [
       noto-fonts
       noto-fonts-cjk-sans
@@ -206,10 +207,6 @@
   # ========================
   # Системные пакеты и переменные
   # ========================
-  environment.variables = {
-    FONTCONFIG_FILE = "/etc/fonts/fonts.conf";
-  };
-
   environment.systemPackages = with pkgs; [
     # Утилиты
     wget curl git neovim htop
