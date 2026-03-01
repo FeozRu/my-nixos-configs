@@ -204,8 +204,12 @@
   };
 
   # ========================
-  # Системные пакеты
+  # Системные пакеты и переменные
   # ========================
+  environment.variables = {
+    FONTCONFIG_FILE = "/etc/fonts/fonts.conf";
+  };
+
   environment.systemPackages = with pkgs; [
     # Утилиты
     wget curl git neovim htop
