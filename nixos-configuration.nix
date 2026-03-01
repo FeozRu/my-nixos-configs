@@ -159,6 +159,9 @@
       nerd-fonts.meslo-lg
       corefonts
       vista-fonts
+      dejavu_fonts
+      liberation_ttf
+      ubuntu_font_family
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif" ];
