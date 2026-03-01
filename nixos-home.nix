@@ -209,6 +209,24 @@
         "x-scheme-handler/ssconf" = "Outline.desktop";
       };
     };
+
+    # Настройки конфигов приложений
+    configFile = {
+      "steamtinkerlaunch/custom/yad-wrapper.sh" = {
+        executable = true;
+        text = ''
+          #!/bin/bash
+          export FONTCONFIG_FILE=/etc/fonts/fonts.conf
+          exec yad "$@"
+        '';
+      };
+      
+      "steamtinkerlaunch/global.conf" = {
+        text = ''
+          YAD="/home/seevser/.config/steamtinkerlaunch/custom/yad-wrapper.sh"
+        '';
+      };
+    };
   };
 
   # ========================

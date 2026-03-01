@@ -273,16 +273,7 @@
     # Игры
     lutris heroic prismlauncher
     gamescope wine winetricks
-    (pkgs.symlinkJoin {
-      name = "steamtinkerlaunch-wrapped";
-      paths = [ pkgs.steamtinkerlaunch ];
-      buildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/steamtinkerlaunch \
-          --set FONTCONFIG_FILE /etc/fonts/fonts.conf
-      '';
-    })
-    xdotool yad
+    steamtinkerlaunch xdotool yad
 
     # Прочее
     bitwarden-desktop keepassxc qbittorrent
