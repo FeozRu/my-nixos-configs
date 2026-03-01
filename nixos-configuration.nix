@@ -161,7 +161,7 @@
       vista-fonts
       dejavu_fonts
       liberation_ttf
-      ubuntu_font_family
+      ubuntu-classic
     ];
     fontconfig.defaultFonts = {
       serif = [ "Noto Serif" ];
