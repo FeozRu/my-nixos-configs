@@ -236,6 +236,7 @@
     pkgs-stable.krita
     kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
+    gimp2
 
     # Офис
     onlyoffice-desktopeditors obsidian
