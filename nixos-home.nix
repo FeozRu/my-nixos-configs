@@ -224,6 +224,7 @@
 
     # Настройки конфигов приложений
     configFile = {
+      "mimeapps.list".force = true;
       "steamtinkerlaunch/custom/yad-wrapper.sh" = {
         executable = true;
         text = ''
