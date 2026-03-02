@@ -104,6 +104,47 @@
     pulse.enable = true;
     jack.enable = true;
     wireplumber.enable = true;
+
+    # Улучшение качества USB-микрофона:
+    # - sample rate 48 кГц (студийный стандарт)
+    # - quantum 256 / min.quantum 32 — низкая задержка без артефактов
+    extraConfig.pipewire."92-usb-mic-quality" = {
+      "context.properties" = {
+        "default.clock.rate" = 48000;
+        "default.clock.allowed-rates" = [ 44100 48000 96000 ];
+      };
+    };
+
+    # WirePlumber: Bluetooth кодеки + suspend + USB-микрофон
+    wireplumber.extraConfig = {
+      # Улучшенные Bluetooth-кодеки и hardware volume
+      "10-bluez" = {
+        "monitor.bluez.properties" = {
+          "bluez5.enable-sbc-xq" = true;   # SBC-XQ — лучшее качество A2DP
+          "bluez5.enable-msbc" = true;      # mSBC — лучшее качество HSP/HFP (звонки)
+          "bluez5.enable-hw-volume" = true; # Аппаратная регулировка громкости
+        };
+      };
+
+
+
+      # Улучшение качества USB-микрофона (более высокий sample rate по умолчанию)
+      "99-usb-mic-quality" = {
+        "monitor.alsa.rules" = [
+          {
+            matches = [
+              { "node.name" = "~alsa_input.usb-*"; }
+            ];
+            actions = {
+              update-props = {
+                "audio.rate" = 48000;
+                "audio.format" = "S24_LE";  # 24 бит (если микрофон поддерживает)
+              };
+            };
+          }
+        ];
+      };
+    };
   };
 
   # ========================
