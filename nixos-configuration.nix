@@ -217,6 +217,15 @@
   };
 
   # ========================
+  # nix-ld (для запуска не-Nix бинарников, например VS Code extensions)
+  # ========================
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc.lib
+    zlib
+  ];
+
+  # ========================
   # Zsh
   # ========================
   programs.zsh.enable = true;
@@ -286,7 +295,8 @@
     onlyoffice-desktopeditors obsidian
 
     # Разработка
-    vscode code-cursor google-antigravity
+    vscode-fhs
+    code-cursor google-antigravity
     dbeaver-bin filezilla putty
     docker-compose android-studio
     jetbrains.idea-oss
