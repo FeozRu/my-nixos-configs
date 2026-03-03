@@ -291,6 +291,7 @@
     docker-compose android-studio
     jetbrains.idea-oss
     jetbrains.pycharm-oss
+    lmstudio
     # jetbrains.rider  # временно убран — JetBrains блокирует скачивание (HTTP 451)
 
     # Языки / SDK
