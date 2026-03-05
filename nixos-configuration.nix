@@ -278,14 +278,14 @@
     firefox chromium
 
     # Общение
-    telegram-desktop discord thunderbird
+    telegram-desktop thunderbird
     teamspeak6-client
     vesktop
 
     # Медиа
     vlc obs-studio
     yandex-music
-    vlc obs-studio inkscape
+    inkscape
     pkgs-stable.krita
     kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
@@ -308,6 +308,7 @@
     # Языки / SDK
     dotnet-sdk_8 jdk17 jdk21 deno
     flutter
+    python3
 
     # Сборка
     clang cmake ninja pkg-config gnumake gcc
