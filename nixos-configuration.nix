@@ -412,6 +412,12 @@
   services.printing.enable = true;
   services.timesyncd.enable = true;
 
+  # Создаем симлинк для совместимости с программами (и virt-secret-init-encryption),
+  # которые жестко требуют /usr/bin/sh
+  systemd.tmpfiles.rules = [
+    "L+ /usr/bin/sh - - - - ${pkgs.bash}/bin/sh"
+  ];
+
   # Сборка мусора
   nix.gc = {
     automatic = true;
