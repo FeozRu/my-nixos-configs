@@ -267,6 +267,7 @@
     gum screenfetch
     file pciutils usbutils
     smartmontools tcpdump
+    ffmpeg-full
 
     # Терминал
     kitty
