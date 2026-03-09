@@ -268,6 +268,7 @@
     file pciutils usbutils
     smartmontools tcpdump
     ffmpeg-full
+    yt-dlg yt-dlp
 
     # Терминал
     kitty
