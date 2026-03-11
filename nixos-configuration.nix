@@ -352,6 +352,8 @@
     '')
     xdotool yad
 
+    openmw portmod
+
     # Прочее
     bitwarden-desktop keepassxc qbittorrent
     kooha qpwgraph
