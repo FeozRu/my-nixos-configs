@@ -404,6 +404,7 @@
       "io.mrarm.mcpelauncher"            # Minecraft Bedrock Launcher
       "com.poweriso.PowerISO"            # PowerISO
       "com.ml4w.dotfilesinstaller"       # Dotfiles Installer
+      "ru.yandex.Browser"                # Yandex Browser
     ];
   };
 
