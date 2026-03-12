@@ -308,6 +308,7 @@
     jetbrains.idea-oss
     jetbrains.pycharm-oss
     lmstudio
+    bruno
     pkgs.nodejs
     # jetbrains.rider  # временно убран — JetBrains блокирует скачивание (HTTP 451)
 
