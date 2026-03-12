@@ -277,7 +277,7 @@
     kdePackages.dolphin
 
     # Браузеры
-    firefox chromium
+    firefox chromium yandex-browser
 
     # Общение
     telegram-desktop thunderbird
