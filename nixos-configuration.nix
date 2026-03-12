@@ -294,7 +294,32 @@
     gimp2
 
     # Нейросети
-    comfyui-nix.packages.${pkgs.system}.cuda
+    (comfyui-nix.packages.${pkgs.system}.cuda.override {
+      extraPackages = ps: with ps; [
+        # --- ПОПУЛЯРНЫЕ ГОТОВЫЕ НОДЫ ИЗ ФЛЕЙКА ---
+        # Раскомментируйте нужные для добавления в сборку
+        comfyui-manager
+        # comfyui-impact-pack
+        # comfyui-controlnet-aux
+        # comfyui_ipadapter_plus
+        # comfyui-videohelpers
+        # rgthree-comfy
+        # was-node-suite-comfyui
+
+        # --- ДОБАВЛЕНИЕ ЛЮБОЙ НОДЫ НАПРЯМУЮ С GITHUB ---
+        # (buildComfyuiPackage rec {
+        #   pname = "ComfyUI-MySuperNode";
+        #   version = "1.0.0";
+        #   src = pkgs.fetchFromGitHub {
+        #     owner = "AuthorName";
+        #     repo = "ComfyUI-MySuperNode";
+        #     rev = "main";
+        #     hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # Замените на реальный хэш после первой сборки
+        #   };
+        #   # buildInputs = [ ps.pytorch ps.numpy ps.opencv4ide ]; # Зависимости из requirements.txt
+        # })
+      ];
+    })
 
     # Офис
     onlyoffice-desktopeditors obsidian
