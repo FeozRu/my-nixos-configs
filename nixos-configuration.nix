@@ -294,7 +294,7 @@
     gimp2
 
     # Нейросети
-    comfyui-nix.packages.${pkgs.system}.cuda
+    comfyui-nix.packages.${pkgs.stdenv.hostPlatform.system}.cuda
 
 
     # Офис
