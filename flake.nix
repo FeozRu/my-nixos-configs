@@ -16,9 +16,11 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, ... }: {
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, comfyui-nix, ... }: {
     nixosConfigurations.seevser-nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
@@ -26,6 +28,7 @@
           system = "x86_64-linux";
           config.allowUnfree = true;
         };
+        inherit comfyui-nix;
       };
       modules = [
         ./nixos-configuration.nix

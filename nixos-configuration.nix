@@ -1,4 +1,4 @@
-{ config, pkgs, pkgs-stable, lib, ... }:
+{ config, pkgs, pkgs-stable, lib, comfyui-nix, ... }:
 
 {
   imports = [
@@ -292,6 +292,9 @@
     kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
     gimp2
+
+    # Нейросети
+    comfyui-nix.packages.${pkgs.system}.cuda
 
     # Офис
     onlyoffice-desktopeditors obsidian
