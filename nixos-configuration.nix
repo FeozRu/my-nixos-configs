@@ -277,7 +277,8 @@
     kdePackages.dolphin
 
     # Браузеры
-    firefox chromium yandex-browser
+    firefox chromium
+    # yandex-browser # not in nixpkgs
 
     # Общение
     telegram-desktop thunderbird
@@ -339,6 +340,7 @@
     # Игры
     lutris heroic prismlauncher
     gamescope wine winetricks
+    pkgs.nur.repos.forkprince.hytale
     (pkgs.writeShellScriptBin "innoextract" ''
       if [[ "$1" == "--version" ]]; then
         ${pkgs.innoextract}/bin/innoextract "$@" | sed 's/-dev//g'
