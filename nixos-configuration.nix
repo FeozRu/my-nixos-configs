@@ -385,6 +385,7 @@
       "com.poweriso.PowerISO"            # PowerISO
       "com.ml4w.dotfilesinstaller"       # Dotfiles Installer
       "ru.yandex.Browser"                # Yandex Browser
+      "ru.linux_gaming.PortProton"       # PortProton
     ];
   };
 
