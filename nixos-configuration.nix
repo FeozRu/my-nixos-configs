@@ -269,6 +269,7 @@
     smartmontools tcpdump
     ffmpeg-full
     video-downloader
+    freerdp
 
     # Терминал
     kitty
