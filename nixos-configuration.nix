@@ -281,7 +281,7 @@
     kdePackages.dolphin
 
     # Браузеры
-    firefox chromium
+    firefox chromium vivaldi
     # yandex-browser # not in nixpkgs
 
     # Общение
