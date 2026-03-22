@@ -1,6 +1,10 @@
 { config, pkgs, lib, ... }:
 
 {
+  imports = [
+    ./nixos-niri-home.nix
+  ];
+
   home.username = "seevser";
   home.homeDirectory = "/home/seevser";
   home.stateVersion = "25.05";
@@ -350,6 +354,8 @@ EOF
     XCURSOR_THEME = "breeze_cursors";
     XCURSOR_SIZE = "24";
   };
+
+
 
   # ========================
   # Управление home-manager
