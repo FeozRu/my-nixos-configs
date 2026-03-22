@@ -290,6 +290,7 @@
 
     # Медиа
     vlc obs-studio
+    pavucontrol
     yandex-music
     inkscape
     pkgs-stable.krita
@@ -379,7 +380,7 @@
            # File exists and is not empty
            sleep 0.2
            # Open satty (a much better modern Wayland editor than swappy)
-           ${pkgs.satty}/bin/satty --filename "$FILE" --fullscreen --output-filename "$HOME/Pictures/Screenshots/Screenshot_$(date +%Y%m%d_%H%M%S).png"
+           ${pkgs.satty}/bin/satty --filename "$FILE" --copy-command "${pkgs.wl-clipboard}/bin/wl-copy" --output-filename "$HOME/Pictures/Screenshots/Screenshot_$(date +%Y%m%d_%H%M%S).png"
            rm -f "$FILE"
            exit 0
         fi

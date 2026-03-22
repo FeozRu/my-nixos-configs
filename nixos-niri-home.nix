@@ -197,6 +197,12 @@
       clip-to-geometry true
     }
 
+    // Satty в плавающем окне
+    window-rule {
+      match app-id="com.gabm.satty"
+      open-floating true
+    }
+
     binds {
       Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+F1 { show-hotkey-overlay; }
@@ -209,8 +215,8 @@
       Mod+Q { close-window; }
 
       Mod+Left  { focus-column-left; }
-      Mod+Down  { focus-window-down; }
-      Mod+Up    { focus-window-up; }
+      Mod+Up    { maximize-column; }
+      Mod+Down  { switch-focus-between-floating-and-tiling; }
       Mod+Right { focus-column-right; }
 
       Mod+Ctrl+Left  { move-column-left; }
