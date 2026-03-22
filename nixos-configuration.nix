@@ -299,6 +299,7 @@
 
     # Нейросети
     comfyui-nix.packages.${pkgs.stdenv.hostPlatform.system}.cuda
+    qwen-code
 
 
     # Офис
