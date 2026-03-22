@@ -275,7 +275,7 @@
     freerdp
 
     # Терминал
-    kitty
+    kitty alacritty
 
     # Файловые менеджеры
     kdePackages.dolphin
