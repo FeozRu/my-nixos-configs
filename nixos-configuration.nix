@@ -79,6 +79,18 @@
     package = config.boot.kernelPackages.nvidiaPackages.stable;
   };
 
+  systemd.services.nvidia-power-limit = {
+    description = "NVIDIA GPU Power Limit";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "nvidia-persistenced.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.linuxPackages.nvidia_x11.bin}/bin/nvidia-smi -pl 280"; # укажите ваш лимит
+      RemainAfterExit = true;
+    };
+  };
+
+
   # ========================
   # Niri, KDE Plasma 6 + Wayland
   # ========================
