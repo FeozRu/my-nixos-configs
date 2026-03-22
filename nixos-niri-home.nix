@@ -1,147 +1,26 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.dms.homeModules.dank-material-shell
+  ];
+
   # ========================
-  # Niri Desktop Ecosystem (Waybar, Fuzzel, SwayNC, config)
+  # DankMaterialShell
   # ========================
-  programs.fuzzel = {
-    enable = true;
-    settings = {
-      main = {
-        font = "MesloLGS NF:size=14";
-        terminal = "kitty";
-        prompt = "❯ ";
-        layer = "overlay";
-        inner-pad = 20;
-        width = 40;
-        lines = 10;
-        horizontal-pad = 20;
-      };
-      colors = {
-        background = "1e1e2ebb";
-        text = "cdd6f4ff";
-        match = "cba6f7ff";
-        selection = "585b70ff";
-        selection-text = "b4befeff";
-        border = "cba6f7ff";
-      };
-      border = {
-        width = 2;
-        radius = 12;
-      };
-    };
-  };
-
-  services.swaync = {
+  programs.dank-material-shell = {
     enable = true;
   };
 
-  programs.waybar = {
-    enable = true;
-    settings = {
-      mainBar = {
-        layer = "top";
-        position = "top";
-        height = 40;
-        spacing = 4;
-        modules-left = [ "niri/workspaces" "niri/window" ];
-        modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "tray" ];
-
-        "niri/workspaces" = {
-          format = "{icon}";
-          format-icons = {
-            active = "";
-            default = "";
-          };
-        };
-        "clock" = {
-          tooltip-format = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-          format = "{:%H:%M}";
-          format-alt = "{:%A, %B %d, %Y}";
-        };
-        "pulseaudio" = {
-          format = "{volume}% {icon} {format_source}";
-          format-bluetooth = "{volume}% {icon} {format_source}";
-          format-bluetooth-muted = " {icon} {format_source}";
-          format-muted = " {format_source}";
-          format-icons = {
-            headphone = "";
-            hands-free = "";
-            headset = "";
-            phone = "";
-            portable = "";
-            car = "";
-            default = ["" "" ""];
-          };
-          on-click = "pavucontrol";
-        };
-        "network" = {
-          format-wifi = "{essid} ";
-          format-ethernet = "{ipaddr}/{cidr} ";
-          tooltip-format = "{ifname} via {gwaddr} ";
-          format-linked = "{ifname} (No IP) ";
-          format-disconnected = "Disconnected ⚠";
-        };
-        "tray" = {
-          spacing = 10;
-        };
-      };
-    };
-    style = ''
-      * {
-        border: none;
-        border-radius: 0;
-        font-family: "MesloLGS NF", "Font Awesome 6 Free", sans-serif;
-        font-size: 14px;
-        min-height: 0;
-      }
-      window#waybar {
-        background-color: rgba(30, 30, 46, 0.7);
-        color: #cdd6f4;
-        transition-property: background-color;
-        transition-duration: .5s;
-        border-bottom: 2px solid rgba(203, 166, 247, 0.5);
-      }
-      #workspaces button {
-        padding: 0 10px;
-        margin: 4px;
-        border-radius: 8px;
-        background-color: transparent;
-        color: #6c7086;
-        transition: all 0.3s ease;
-      }
-      #workspaces button:hover {
-        background: rgba(255, 255, 255, 0.1);
-        text-shadow: 0 0 5px rgba(255,255,255,0.5);
-      }
-      #workspaces button.active {
-        color: #cba6f7;
-        background: rgba(203, 166, 247, 0.15);
-      }
-      #clock, #battery, #cpu, #memory, #disk, #temperature, #backlight, #network, #pulseaudio, #wireplumber, #custom-media, #tray, #mode, #idle_inhibitor, #scratchpad, #mpd {
-        padding: 0 15px;
-        margin: 4px;
-        border-radius: 8px;
-        background-color: rgba(49, 50, 68, 0.5);
-        color: #cdd6f4;
-      }
-      #window {
-        margin: 0 15px;
-      }
-    '';
-  };
-
-  # Сам конфиг Niri (KDL)
+  # ========================
+  # Niri config (KDL)
+  # ========================
   xdg.configFile."niri/config.kdl".text = ''
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "waybar"
-    spawn-at-startup "swaync"
     spawn-at-startup "swww-daemon"
-    spawn-at-startup "nm-applet"
-    spawn-at-startup "blueman-applet"
+    spawn-at-startup "dms" "run" "--session"
     spawn-at-startup "udiskie"
-    // Polkit Agent from KDE (автозапуск агента авторизации)
+    // Polkit Agent из KDE
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
 
     input {
@@ -196,7 +75,7 @@
       open-floating true
     }
 
-    // Blueman Manager в плавающем окне (не сдвигает остальные окна)
+    // Blueman Manager в плавающем окне
     window-rule {
       match app-id="blueman-manager"
       open-floating true
@@ -212,9 +91,12 @@
       Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+F1 { show-hotkey-overlay; }
 
-      // Лаунчеры и программы
+      // Терминал
       Mod+T { spawn "alacritty"; }
-      Mod+F2 { spawn "fuzzel"; }
+
+      // DMS — лаунчер и настройки
+      Mod+F2 { spawn "dms" "ipc" "call" "spotlight" "open"; }
+      Mod+F7 { spawn "dms" "ipc" "call" "settings" "open"; }
 
       // Управление окнами
       Mod+Q { close-window; }
@@ -260,10 +142,10 @@
       Mod+Minus { set-column-width "-10%"; }
       Mod+Equal { set-column-width "+10%"; }
 
-      // Скриншоты
-      Print { screenshot; }
-      Mod+Print { screenshot-window; }
-      Ctrl+Print { screenshot-screen; }
+      // Скриншоты (через DMS, кроме кастомного Satty-флоу)
+      Print { spawn "dms" "ipc" "call" "niri" "screenshot"; }
+      Mod+Print { spawn "dms" "ipc" "call" "niri" "screenshotWindow"; }
+      Ctrl+Print { spawn "dms" "ipc" "call" "niri" "screenshotScreen"; }
       Mod+Shift+S { spawn "niri-screenshot-edit"; }
 
       // Выход

@@ -6,6 +6,11 @@
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
     nur.url = "github:nix-community/NUR";
 
+    dms = {
+      url = "github:AvengeMedia/DankMaterialShell/stable";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -21,7 +26,7 @@
     comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, comfyui-nix, nur, ... }@inputs: {
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, comfyui-nix, nur, dms, ... }@inputs: {
     nixosConfigurations.seevser-nixos = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
@@ -51,6 +56,7 @@
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
           home-manager.backupFileExtension = "backup";
+          home-manager.extraSpecialArgs = { inherit inputs; };
           home-manager.users.seevser = import ./nixos-home.nix;
         }
       ];
