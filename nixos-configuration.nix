@@ -94,6 +94,7 @@
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde ];
+    config.common.default = "*";
   };
 
   # ========================
@@ -343,7 +344,7 @@
     qemu_kvm gnome-boxes
 
     # Niri / Wayland utils
-    waybar swaynotificationcenter fuzzel swww
+    waybar swaynotificationcenter fuzzel swww xwayland-satellite
     wl-clipboard grim slurp satty
     networkmanagerapplet blueman udiskie
     nwg-look hyprlock

@@ -142,6 +142,7 @@
 
   # Сам конфиг Niri (KDL)
   xdg.configFile."niri/config.kdl".text = ''
+    spawn-at-startup "xwayland-satellite"
     spawn-at-startup "waybar"
     spawn-at-startup "swaync"
     spawn-at-startup "swww-daemon"
@@ -216,6 +217,8 @@
 
       Mod+Left  { focus-column-left; }
       Mod+Up    { maximize-column; }
+      Mod+Shift+Up { maximize-window-to-edges; }
+      Mod+Shift+F { fullscreen-window; }
       Mod+Down  { toggle-window-floating; }
       Mod+Right { focus-column-right; }
 
