@@ -46,7 +46,7 @@
         spacing = 4;
         modules-left = [ "niri/workspaces" "niri/window" ];
         modules-center = [ "clock" ];
-        modules-right = [ "pulseaudio" "network" "bluetooth" "tray" ];
+        modules-right = [ "pulseaudio" "network" "tray" ];
 
         "niri/workspaces" = {
           format = "{icon}";
@@ -67,8 +67,8 @@
           format-muted = " {format_source}";
           format-icons = {
             headphone = "";
-            hands-free = "";
-            headset = "";
+            hands-free = "";
+            headset = "";
             phone = "";
             portable = "";
             car = "";
@@ -82,14 +82,6 @@
           tooltip-format = "{ifname} via {gwaddr} ";
           format-linked = "{ifname} (No IP) ";
           format-disconnected = "Disconnected ⚠";
-        };
-        "bluetooth" = {
-          format = " {status}";
-          format-disabled = "";
-          format-connected = " {num_connections}";
-          tooltip-format = "{controller_alias}\t{controller_address}";
-          tooltip-format-connected = "{controller_alias}\t{controller_address}\n\n{device_enumerate}";
-          tooltip-format-enumerate-connected = "{device_alias}\t{device_address}";
         };
         "tray" = {
           spacing = 10;
@@ -204,12 +196,24 @@
       open-floating true
     }
 
+    // Blueman Manager в плавающем окне (не сдвигает остальные окна)
+    window-rule {
+      match app-id="blueman-manager"
+      open-floating true
+    }
+
+    // PulseAudio Volume Control в плавающем окне
+    window-rule {
+      match app-id="org.pulseaudio.pavucontrol"
+      open-floating true
+    }
+
     binds {
       Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+F1 { show-hotkey-overlay; }
 
       // Лаунчеры и программы
-      Mod+T { spawn "kitty"; }
+      Mod+T { spawn "alacritty"; }
       Mod+F2 { spawn "fuzzel"; }
 
       // Управление окнами
