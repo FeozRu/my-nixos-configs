@@ -216,7 +216,7 @@
 
       Mod+Left  { focus-column-left; }
       Mod+Up    { maximize-column; }
-      Mod+Down  { switch-focus-between-floating-and-tiling; }
+      Mod+Down  { toggle-window-floating; }
       Mod+Right { focus-column-right; }
 
       Mod+Ctrl+Left  { move-column-left; }
