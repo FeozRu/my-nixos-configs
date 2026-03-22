@@ -151,15 +151,11 @@
     // Polkit Agent from KDE (автозапуск агента авторизации)
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
 
-    environment {
-      DISPLAY ":0"
-    }
-
     input {
       keyboard {
         xkb {
           layout "us,ru"
-          options "grp:win_space_toggle"
+          options "grp:caps_toggle"
         }
       }
       mouse {
@@ -203,10 +199,11 @@
 
     binds {
       Mod+Shift+Slash { show-hotkey-overlay; }
+      Mod+F1 { show-hotkey-overlay; }
 
       // Лаунчеры и программы
       Mod+T { spawn "kitty"; }
-      Mod+Space { spawn "fuzzel"; }
+      Mod+F2 { spawn "fuzzel"; }
 
       // Управление окнами
       Mod+Q { close-window; }
