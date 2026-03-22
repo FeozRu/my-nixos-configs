@@ -343,7 +343,7 @@
 
     # Niri / Wayland utils
     waybar swaynotificationcenter fuzzel swww
-    wl-clipboard grim slurp swappy
+    wl-clipboard grim slurp satty
     networkmanagerapplet blueman udiskie
     nwg-look hyprlock
     kdePackages.polkit-kde-agent-1
@@ -369,6 +369,25 @@
       ' -- "steamtinkerlaunch" "$@"
     '')
     xdotool yad
+
+    (pkgs.writeShellScriptBin "niri-screenshot-edit" ''
+      FILE="/tmp/screenshot-$(date +%s).png"
+      niri msg action screenshot --path "$FILE"
+      # Niri screenshot is interactive, wait up to 60 seconds for the user to select an area
+      for i in {1..600}; do
+        if [ -s "$FILE" ]; then
+           # File exists and is not empty
+           sleep 0.2
+           # Open satty (a much better modern Wayland editor than swappy)
+           ${pkgs.satty}/bin/satty --filename "$FILE" --fullscreen --output-filename "$HOME/Pictures/Screenshots/Screenshot_$(date +%Y%m%d_%H%M%S).png"
+           rm -f "$FILE"
+           exit 0
+        fi
+        sleep 0.1
+      done
+      # Timeout or user canceled (pressed Esc)
+      rm -f "$FILE"
+    '')
 
     openmw portmod
 
