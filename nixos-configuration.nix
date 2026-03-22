@@ -80,8 +80,10 @@
   };
 
   # ========================
-  # KDE Plasma 6 + Wayland
+  # Niri, KDE Plasma 6 + Wayland
   # ========================
+  programs.niri.enable = true;
+
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
@@ -337,6 +339,13 @@
 
     # Виртуализация
     qemu_kvm gnome-boxes
+
+    # Niri / Wayland utils
+    waybar swaynotificationcenter fuzzel swww
+    wl-clipboard grim slurp swappy
+    networkmanagerapplet blueman udiskie
+    nwg-look hyprlock
+    kdePackages.polkit-kde-agent-1
 
     # Игры
     lutris heroic prismlauncher
