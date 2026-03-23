@@ -23,14 +23,17 @@
     // Polkit Agent из KDE
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
 
-    include "dms/outputs.kdl"
-    include "dms/windowrules.kdl"
+    include "dms/alttab.kdl"
+    include "dms/binds.kdl"
     include "dms/colors.kdl"
     include "dms/cursor.kdl"
     include "dms/layout.kdl"
+    include "dms/outputs.kdl"
+    include "dms/windowrules.kdl"
     include "dms/wpblur.kdl"
 
     input {
+      focus-follows-mouse max-scroll-amount="1%"
       keyboard {
         xkb {
           layout "us,ru"
