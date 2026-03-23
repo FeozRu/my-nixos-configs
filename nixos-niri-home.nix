@@ -10,15 +10,17 @@
   # ========================
   programs.dank-material-shell = {
     enable = true;
+    systemd.enable = true;
   };
 
   # ========================
   # Niri config (KDL)
   # ========================
   xdg.configFile."niri/config.kdl".text = ''
+    prefer-no-csd
+
     spawn-at-startup "xwayland-satellite"
     spawn-at-startup "swww-daemon"
-    spawn-at-startup "dms" "run" "--session"
     spawn-at-startup "udiskie"
     // Polkit Agent из KDE
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"
@@ -105,8 +107,8 @@
       Mod+T { spawn "alacritty"; }
 
       // DMS — лаунчер и настройки
-      Mod+F2 { spawn "dms" "ipc" "call" "spotlight" "open"; }
-      Mod+F7 { spawn "dms" "ipc" "call" "settings" "open"; }
+      //Mod+F2 { spawn "dms" "ipc" "call" "spotlight" "open"; }
+      //Mod+F7 { spawn "dms" "ipc" "call" "settings" "open"; }
 
       // Управление окнами
       Mod+Q { close-window; }

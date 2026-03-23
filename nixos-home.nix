@@ -364,6 +364,22 @@ EOF
 
 
   # ========================
+  # GTK тема и иконки (для корректного отображения иконок в трее)
+  # ========================
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Breeze-Dark";
+      package = pkgs.kdePackages.breeze-gtk;
+    };
+    iconTheme = {
+      name = "Papirus-Dark";
+      package = pkgs.papirus-icon-theme;
+    };
+    gtk4.theme = null;
+  };
+
+  # ========================
   # Pointer cursor
   # ========================
   home.pointerCursor = {
