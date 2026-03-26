@@ -151,8 +151,14 @@
       Mod+Shift+5 { move-column-to-workspace 5; }
       Mod+Shift+6 { move-column-to-workspace 6; }
 
+      // Объединение/разъединение окон в колонке
+      Mod+Comma { consume-or-expel-window-left; }
+      Mod+Period { consume-or-expel-window-right; }
+
       Mod+Minus { set-column-width "-10%"; }
       Mod+Equal { set-column-width "+10%"; }
+      Mod+Alt+Minus { set-window-height "-10%"; }
+      Mod+Alt+Equal { set-window-height "+10%"; }
 
       // Скриншоты (через DMS, кроме кастомного Satty-флоу)
       Print { spawn "dms" "ipc" "call" "niri" "screenshot"; }
