@@ -278,6 +278,7 @@
   environment.systemPackages = with pkgs; [
     # Утилиты
     wget curl git neovim htop
+    lazygit ripgrep fd fzf tree-sitter  # LazyVim deps
     unzip unrar p7zip less
     gum screenfetch
     file pciutils usbutils
