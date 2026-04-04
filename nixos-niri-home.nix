@@ -47,6 +47,12 @@
       }
     }
 
+    gestures {
+      hot-corners {
+        off
+      }
+    }
+
     output "eDP-1" {
       scale 1.0
     }
@@ -102,6 +108,9 @@
     binds {
       Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+F1 { show-hotkey-overlay; }
+
+      // Отмена захвата клавиш окном
+      Mod+Escape { toggle-keyboard-shortcuts-inhibit; }
 
       // Терминал
       Mod+T { spawn "alacritty"; }
