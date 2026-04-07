@@ -194,9 +194,9 @@
       enable = true;
       defaultApplications = {
         # Браузер
-        "x-scheme-handler/http"  = "firefox.desktop";
-        "x-scheme-handler/https" = "firefox.desktop";
-        "text/html"              = "firefox.desktop";
+        "x-scheme-handler/http"  = "vivaldi-stable.desktop";
+        "x-scheme-handler/https" = "vivaldi-stable.desktop";
+        "text/html"              = "vivaldi-stable.desktop";
 
         # Почта
         "x-scheme-handler/mailto" = "thunderbird.desktop";
