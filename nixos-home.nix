@@ -208,6 +208,10 @@
       italic_font      = "auto";
       font_size        = 12;
 
+      # Протокол терминала — xterm-kitty позволяет Yazi использовать
+      # нативный Kitty Graphics Protocol для изображений в полный размер
+      term = "xterm-kitty";
+
       # Внешний вид
       background_opacity  = "0.92";
       dynamic_background_opacity = true;
@@ -353,7 +357,13 @@
       "yazi/yazi.toml".text = ''
         [preview]
         wrap = "yes"
-        
+        # Растягиваем изображения на всю панель предпросмотра
+        max_width  = 2000
+        max_height = 2000
+        # Принудительно использовать нативный Kitty Graphics Protocol
+        # (без этого Yazi может выбрать Iip/iterm2 который не умеет в размеры)
+        image_filter = "triangle"
+
         [[plugin.prepend_previewers]]
         url = "*.md"
         run = 'faster-piper -- mdcat --columns $w "$1"'
@@ -361,6 +371,15 @@
         [[plugin.prepend_previewers]]
         url = "*.mdx"
         run = 'faster-piper -- mdcat --columns $w "$1"'
+      '';
+
+      # Keybindings живут в keymap.toml (отдельно от yazi.toml в Yazi 26+)
+      "yazi/keymap.toml".text = ''
+        # T — развернуть предпросмотр на весь экран / вернуть обратно
+        [[mgr.prepend_keymap]]
+        on   = "T"
+        run  = "plugin toggle-pane max-preview"
+        desc = "Maximize or restore the preview pane"
       '';
       "steamtinkerlaunch/custom/yad-wrapper.sh" = {
         executable = true;
