@@ -356,11 +356,11 @@
         
         [[plugin.prepend_previewers]]
         url = "*.md"
-        run = 'faster-piper -- mdcat -c $w "$1"'
+        run = 'faster-piper -- mdcat --columns $w "$1"'
 
         [[plugin.prepend_previewers]]
         url = "*.mdx"
-        run = 'faster-piper -- mdcat -c $w "$1"'
+        run = 'faster-piper -- mdcat --columns $w "$1"'
       '';
       "steamtinkerlaunch/custom/yad-wrapper.sh" = {
         executable = true;
