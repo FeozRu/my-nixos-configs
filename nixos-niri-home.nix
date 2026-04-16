@@ -113,7 +113,7 @@
       Mod+Escape { toggle-keyboard-shortcuts-inhibit; }
 
       // Терминал
-      Mod+T { spawn "alacritty"; }
+      Mod+T { spawn "kitty"; }
 
       // DMS — лаунчер и настройки
       //Mod+F2 { spawn "dms" "ipc" "call" "spotlight" "open"; }

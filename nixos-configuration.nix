@@ -171,13 +171,25 @@
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true; # Показывать заряд батареи и использовать новые фичи BlueZ
+        FastConnectable = true;
+        JustWorksRepairing = "always";
+        ControllerMode = "dual";
+      };
+    };
   };
 
   # ========================
   # Виртуализация
   # ========================
   virtualisation = {
-    docker.enable = true;
+    podman = {
+      enable = true;
+      dockerCompat = true;
+      defaultNetwork.settings.dns_enabled = true;
+    };
 
     libvirtd = {
       enable = true;
@@ -256,7 +268,6 @@
     extraGroups = [
       "wheel"
       "networkmanager"
-      "docker"
       "libvirtd"
       "kvm"
       "video"
@@ -324,7 +335,7 @@
     vscode-fhs
     code-cursor google-antigravity
     dbeaver-bin filezilla putty
-    docker-compose android-studio
+    podman-compose android-studio
     jetbrains.idea-oss
     jetbrains.pycharm-oss
     lmstudio

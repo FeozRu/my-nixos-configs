@@ -19,6 +19,85 @@
 
     # Deno (ставим глобально)
     deno
+
+    # Yazi и зависимости для предпросмотра
+    yazi
+    chafa
+    ueberzugpp
+    ffmpegthumbnailer
+    poppler-utils
+    bottom
+    mdcat # Идеальный парсер Markdown, отлично работает с заголовками и таблицами
+
+    # D-Bus FileManager1 сервис: перехватывает ShowItems/ShowFolders от Electron-приложений
+    # (Vivaldi, VSCode, Antigravity) и открывает найденный файл в Kitty+Yazi
+    (pkgs.writeTextFile {
+      name = "yazi-filemanager1";
+      executable = true;
+      destination = "/bin/yazi-filemanager1";
+      text = ''
+        #!${pkgs.python3.withPackages (ps: [ ps.pygobject3 ])}/bin/python3
+        import os, subprocess, sys, urllib.parse
+        from gi.repository import Gio, GLib
+
+        XML = """<node>
+          <interface name="org.freedesktop.FileManager1">
+            <method name="ShowFolders">
+              <arg name="uris" type="as" direction="in"/>
+              <arg name="startupId" type="s" direction="in"/>
+            </method>
+            <method name="ShowItems">
+              <arg name="uris" type="as" direction="in"/>
+              <arg name="startupId" type="s" direction="in"/>
+            </method>
+            <method name="ShowItemProperties">
+              <arg name="uris" type="as" direction="in"/>
+              <arg name="startupId" type="s" direction="in"/>
+            </method>
+          </interface>
+        </node>"""
+
+        def uri_to_path(uri):
+            if uri.startswith("file://"):
+                return urllib.parse.unquote(uri[7:])
+            return uri
+
+        def open_in_yazi(path):
+            # Yazi умеет принимать путь к файлу: откроет родительскую директорию
+            # и подсветит нужный файл автоматически
+            subprocess.Popen(
+                ["kitty", "-e", "yazi", path],
+                start_new_session=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+
+        def handle_method_call(conn, sender, obj, iface, method, params, invocation):
+            args = params.unpack()
+            uris = args[0] if args else []
+            if uris:
+                open_in_yazi(uri_to_path(uris[0]))
+            invocation.return_value(None)
+
+        def on_bus_acquired(conn, name):
+            info = Gio.DBusNodeInfo.new_for_xml(XML)
+            conn.register_object(
+                "/org/freedesktop/FileManager1",
+                info.interfaces[0],
+                handle_method_call, None, None,
+            )
+
+        loop = GLib.MainLoop()
+        Gio.bus_own_name(
+            Gio.BusType.SESSION,
+            "org.freedesktop.FileManager1",
+            Gio.BusNameOwnerFlags.REPLACE,
+            on_bus_acquired, None,
+            lambda *a: loop.quit(),
+        )
+        loop.run()
+      '';
+    })
   ];
 
   # ========================
@@ -76,6 +155,15 @@
 
       # === .NET tools ===
       export PATH="$PATH:$HOME/.dotnet/tools"
+      # === Yazi shell wrapper ===
+      function y() {
+        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+          builtin cd -- "$cwd"
+        fi
+        rm -f -- "$tmp"
+      }
     '';
 
     shellAliases = {
@@ -85,12 +173,12 @@
       cleanup = "sudo nix-collect-garbage -d";
       nixedit = "nvim /home/seevser/nix-configs-git/nixos-configuration.nix";
 
-      # Docker
-      dcu  = "docker compose up -d";
-      dcd  = "docker compose down";
-      dcl  = "docker compose logs -f";
-      dps  = "docker ps";
-      dpsa = "docker ps -a";
+      # Podman
+      dcu  = "podman-compose up -d";
+      dcd  = "podman-compose down";
+      dcl  = "podman-compose logs -f";
+      dps  = "podman ps";
+      dpsa = "podman ps -a";
 
       # Git (дополнительно к плагину oh-my-zsh)
       gs  = "git status";
@@ -103,6 +191,9 @@
       # Neovim
       vim = "nvim";
       vi  = "nvim";
+
+      # Yazi
+      y = "yazi";
     };
   };
 
@@ -123,6 +214,34 @@
       window_padding_width = 8;
       confirm_os_window_close = 0;
       hide_window_decorations = false;
+
+      # Цвета (из Alacritty dank-theme)
+      foreground            = "#e6e0e9";
+      background            = "#141218";
+      selection_foreground  = "#e6e0e9";
+      selection_background  = "#4f378b";
+      cursor                = "#d0bcff";
+      cursor_text_color     = "#141218";
+
+      # Normal
+      color0                = "#141218";
+      color1                = "#ff728f";
+      color2                = "#7fff9a";
+      color3                = "#ffda72";
+      color4                = "#bca5f2";
+      color5                = "#4e3d76";
+      color6                = "#D0BCFF";
+      color7                = "#f4efff";
+
+      # Bright
+      color8                = "#9d99a5";
+      color9                = "#ff9fb2";
+      color10               = "#a5ffb8";
+      color11               = "#ffe7a5";
+      color12               = "#d7c6ff";
+      color13               = "#ded0ff";
+      color14               = "#e9e0ff";
+      color15               = "#faf8ff";
 
       # Курсор
       cursor_shape     = "beam";
@@ -148,20 +267,7 @@
     defaultEditor = true;  # $EDITOR=nvim
     viAlias = true;        # vi → nvim
     vimAlias = true;       # vim → nvim
-    extraConfig = ''
-      set number
-      set relativenumber
-      set tabstop=2
-      set shiftwidth=2
-      set expandtab
-      set smartindent
-      set termguicolors
-      set clipboard=unnamedplus
-      set mouse=a
-      set ignorecase
-      set smartcase
-      set undofile
-    '';
+    # Конфигурация управляется AstroNvim (отдельный репозиторий в ~/.config/nvim)
   };
 
   # ========================
@@ -193,6 +299,9 @@
     mimeApps = {
       enable = true;
       defaultApplications = {
+        # Файловый менеджер (папки)
+        "inode/directory" = "yazi.desktop";
+        
         # Браузер
         "x-scheme-handler/http"  = "vivaldi-stable.desktop";
         "x-scheme-handler/https" = "vivaldi-stable.desktop";
@@ -226,9 +335,33 @@
       };
     };
 
+    desktopEntries = {
+      yazi = {
+        name = "Yazi";
+        genericName = "File Manager";
+        exec = "kitty -e yazi %u";
+        icon = "system-file-manager";
+        terminal = false;
+        categories = [ "System" "FileTools" "FileManager" ];
+        mimeType = [ "inode/directory" ];
+      };
+    };
+
     # Настройки конфигов приложений
     configFile = {
       "mimeapps.list".force = true;
+      "yazi/yazi.toml".text = ''
+        [preview]
+        wrap = "yes"
+        
+        [[plugin.prepend_previewers]]
+        url = "*.md"
+        run = 'faster-piper -- mdcat -c $w "$1"'
+
+        [[plugin.prepend_previewers]]
+        url = "*.mdx"
+        run = 'faster-piper -- mdcat -c $w "$1"'
+      '';
       "steamtinkerlaunch/custom/yad-wrapper.sh" = {
         executable = true;
         text = ''
@@ -338,6 +471,23 @@ EOF
     echo "skyrimspecialedition" > ~/.config/steamtinkerlaunch/mo2/lastinstance.conf
   '';
 
+  # Прописываем yazi.desktop в mimeinfo.cache после каждого rebuild.
+  # Electron-приложения (Vivaldi, VSCode, Antigravity) читают именно этот кэш напрямую,
+  # игнорируя mimeapps.list, поэтому без этого открывается Dolphin.
+  home.activation.yaziMimeCache = lib.hm.dag.entryAfter ["writeBoundary"] ''
+    CACHE="$HOME/.local/share/applications/mimeinfo.cache"
+    mkdir -p "$(dirname "$CACHE")"
+    if [ ! -f "$CACHE" ]; then
+      printf '[MIME Cache]\n' > "$CACHE"
+    fi
+    # Обновляем или вставляем запись inode/directory
+    if grep -q '^inode/directory=' "$CACHE" 2>/dev/null; then
+      sed -i 's|^inode/directory=.*|inode/directory=yazi.desktop;|' "$CACHE"
+    else
+      printf 'inode/directory=yazi.desktop;\n' >> "$CACHE"
+    fi
+  '';
+
   # ========================
   # Локализация (переменные окружения)
   # ========================
@@ -388,5 +538,87 @@ EOF
     size = 24;
     gtk.enable = true;
     x11.enable = true;
+  };
+
+  # ========================
+  # D-Bus FileManager1 → Yazi
+  # Перехватывает ShowItems/ShowFolders от Electron-приложений и открывает Yazi
+  # ========================
+  systemd.user.services.yazi-filemanager1 = {
+    Unit = {
+      Description = "FileManager1 D-Bus service (opens Yazi instead of Dolphin)";
+      After = [ "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.lib.getExe' (pkgs.writeTextFile {
+        name = "yazi-filemanager1";
+        executable = true;
+        destination = "/bin/yazi-filemanager1";
+        text = ''
+          #!${pkgs.python3.withPackages (ps: [ ps.pygobject3 ])}/bin/python3
+          import os, subprocess, sys, urllib.parse
+          from gi.repository import Gio, GLib
+
+          XML = """<node>
+            <interface name="org.freedesktop.FileManager1">
+              <method name="ShowFolders">
+                <arg name="uris" type="as" direction="in"/>
+                <arg name="startupId" type="s" direction="in"/>
+              </method>
+              <method name="ShowItems">
+                <arg name="uris" type="as" direction="in"/>
+                <arg name="startupId" type="s" direction="in"/>
+              </method>
+              <method name="ShowItemProperties">
+                <arg name="uris" type="as" direction="in"/>
+                <arg name="startupId" type="s" direction="in"/>
+              </method>
+            </interface>
+          </node>"""
+
+          def uri_to_path(uri):
+              if uri.startswith("file://"):
+                  return urllib.parse.unquote(uri[7:])
+              return uri
+
+          def open_in_yazi(path):
+              subprocess.Popen(
+                  ["kitty", "-e", "yazi", path],
+                  start_new_session=True,
+                  stdout=subprocess.DEVNULL,
+                  stderr=subprocess.DEVNULL,
+              )
+
+          def handle_method_call(conn, sender, obj, iface, method, params, invocation):
+              args = params.unpack()
+              uris = args[0] if args else []
+              if uris:
+                  open_in_yazi(uri_to_path(uris[0]))
+              invocation.return_value(None)
+
+          def on_bus_acquired(conn, name):
+              info = Gio.DBusNodeInfo.new_for_xml(XML)
+              conn.register_object(
+                  "/org/freedesktop/FileManager1",
+                  info.interfaces[0],
+                  handle_method_call, None, None,
+              )
+
+          loop = GLib.MainLoop()
+          Gio.bus_own_name(
+              Gio.BusType.SESSION,
+              "org.freedesktop.FileManager1",
+              Gio.BusNameOwnerFlags.REPLACE,
+              on_bus_acquired, None,
+              lambda *a: loop.quit(),
+          )
+          loop.run()
+        '';
+      }) "yazi-filemanager1"}";
+      Restart = "on-failure";
+      RestartSec = "2s";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 }
