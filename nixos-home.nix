@@ -194,6 +194,9 @@
 
       # Yazi
       y = "yazi";
+
+      # ollama + claude-code
+      oc = "ollama launch claude";
     };
   };
 

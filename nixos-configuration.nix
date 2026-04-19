@@ -326,6 +326,8 @@
     # Нейросети
     comfyui-nix.packages.${pkgs.stdenv.hostPlatform.system}.cuda
     qwen-code
+    claude-code
+    # ollama # Moved to services.ollama
 
 
     # Офис
@@ -444,6 +446,14 @@
     ];
   };
 
+
+  # ========================
+  # Ollama (AI Service)
+  # ========================
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-cuda;
+  };
 
   # ========================
   # V2RayA
