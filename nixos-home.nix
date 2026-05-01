@@ -17,9 +17,6 @@
     zsh-powerlevel10k
     meslo-lgs-nf
 
-    # Deno (ставим глобально)
-    deno
-
     # Yazi и зависимости для предпросмотра
     yazi
     chafa
@@ -145,9 +142,6 @@
       # === Powerlevel10k theme ===
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-      # === Deno ===
-      export PATH="$HOME/.deno/bin:$PATH"
 
       # === SDKMAN ===
       export SDKMAN_DIR="$HOME/.sdkman"
