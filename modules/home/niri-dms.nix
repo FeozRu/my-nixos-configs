@@ -5,17 +5,11 @@
     inputs.dms.homeModules.dank-material-shell
   ];
 
-  # ========================
-  # DankMaterialShell
-  # ========================
   programs.dank-material-shell = {
     enable = true;
     systemd.enable = true;
   };
 
-  # ========================
-  # Niri config (KDL)
-  # ========================
   xdg.configFile."niri/config.kdl".text = ''
     prefer-no-csd
 
@@ -87,19 +81,16 @@
       clip-to-geometry true
     }
 
-    // Satty в плавающем окне
     window-rule {
       match app-id="com.gabm.satty"
       open-floating true
     }
 
-    // Blueman Manager в плавающем окне
     window-rule {
       match app-id="blueman-manager"
       open-floating true
     }
 
-    // PulseAudio Volume Control в плавающем окне
     window-rule {
       match app-id="org.pulseaudio.pavucontrol"
       open-floating true
@@ -109,17 +100,10 @@
       Mod+Shift+Slash { show-hotkey-overlay; }
       Mod+F1 { show-hotkey-overlay; }
 
-      // Отмена захвата клавиш окном
       Mod+Escape { toggle-keyboard-shortcuts-inhibit; }
 
-      // Терминал
       Mod+T { spawn "kitty"; }
 
-      // DMS — лаунчер и настройки
-      //Mod+F2 { spawn "dms" "ipc" "call" "spotlight" "open"; }
-      //Mod+F7 { spawn "dms" "ipc" "call" "settings" "open"; }
-
-      // Управление окнами
       Mod+Q { close-window; }
 
       Mod+Left  { focus-column-left; }
@@ -132,7 +116,6 @@
       Mod+Ctrl+Left  { move-column-left; }
       Mod+Ctrl+Right { move-column-right; }
 
-      // Воркспейсы
       Mod+Page_Down { focus-workspace-down; }
       Mod+Page_Up   { focus-workspace-up; }
 
@@ -160,7 +143,6 @@
       Mod+Shift+5 { move-column-to-workspace 5; }
       Mod+Shift+6 { move-column-to-workspace 6; }
 
-      // Объединение/разъединение окон в колонке
       Mod+Comma { consume-or-expel-window-left; }
       Mod+Period { consume-or-expel-window-right; }
 
@@ -169,13 +151,11 @@
       Mod+Alt+Minus { set-window-height "-10%"; }
       Mod+Alt+Equal { set-window-height "+10%"; }
 
-      // Скриншоты (через DMS, кроме кастомного Satty-флоу)
       Print { spawn "dms" "ipc" "call" "niri" "screenshot"; }
       Mod+Print { spawn "dms" "ipc" "call" "niri" "screenshotWindow"; }
       Ctrl+Print { spawn "dms" "ipc" "call" "niri" "screenshotScreen"; }
       Mod+Shift+S { spawn "niri-screenshot-edit"; }
 
-      // Выход
       Mod+Shift+Q { quit; }
     }
   '';
