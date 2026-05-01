@@ -308,7 +308,7 @@
     file pciutils usbutils
     smartmontools tcpdump
     ffmpeg-full
-    video-downloader
+    # video-downloader убран: тянет deno транзитивно через yt-dlp (yt-dlp-ejs)
     freerdp
 
     # Терминал
