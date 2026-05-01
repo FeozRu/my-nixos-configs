@@ -20,7 +20,7 @@
     prefer-no-csd
 
     spawn-at-startup "xwayland-satellite"
-    spawn-at-startup "swww-daemon"
+    spawn-at-startup "awww-daemon"
     spawn-at-startup "udiskie"
     // Polkit Agent из KDE
     spawn-at-startup "${pkgs.kdePackages.polkit-kde-agent-1}/libexec/polkit-kde-authentication-agent-1"

@@ -46,6 +46,7 @@
     };
     firewall.enable = true;
   };
+  programs.amnezia-vpn.enable = true;
 
   # ========================
   # Локализация
@@ -250,6 +251,18 @@
   programs.nix-ld.libraries = with pkgs; [
     stdenv.cc.cc.lib
     zlib
+    libx11
+    libxext
+    libxcursor
+    libxrandr
+    libxrender
+    libxi
+    libxtst
+    libxxf86vm
+    libGL
+    alsa-lib
+    fontconfig
+    freetype
   ];
 
   # ========================
@@ -321,7 +334,7 @@
     pkgs-stable.krita
     kdePackages.kdenlive
     kdePackages.gwenview shotwell kdePackages.elisa
-    gimp2
+    # gimp2 убран — дублирует Flatpak (org.gimp.GIMP) и не собирается с glib-2.86
 
     # Нейросети
     comfyui-nix.packages.${pkgs.stdenv.hostPlatform.system}.cuda
@@ -370,7 +383,7 @@
     qemu_kvm gnome-boxes
 
     # Niri / Wayland utils
-    waybar swaynotificationcenter fuzzel swww xwayland-satellite
+    waybar swaynotificationcenter fuzzel awww xwayland-satellite
     wl-clipboard grim slurp satty
     networkmanagerapplet blueman udiskie
     nwg-look hyprlock
@@ -504,6 +517,20 @@
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # CUDA binary cache — ollama-cuda и другие CUDA-пакеты берутся готовыми,
+  # а не собираются из исходников при каждом обновлении.
+  nix.settings.substituters = [
+    "https://cache.nixos.org"
+    "https://cuda-maintainers.cachix.org"
+  ];
+  nix.settings.trusted-public-keys = [
+    "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+    "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+  ];
+  # Сохранять вывод сборки между GC-запусками (не пересобирать после nix-collect-garbage)
+  nix.settings.keep-outputs = true;
+  nix.settings.keep-derivations = true;
 
   # Не меняй после установки!
   system.stateVersion = "25.05";

@@ -274,6 +274,8 @@
     defaultEditor = true;  # $EDITOR=nvim
     viAlias = true;        # vi → nvim
     vimAlias = true;       # vim → nvim
+    withRuby = false;      # Новый дефолт в 26.05 — Ruby-интеграция не нужна
+    withPython3 = false;   # Новый дефолт в 26.05 — Python3-интеграция не нужна
     # Конфигурация управляется AstroNvim (отдельный репозиторий в ~/.config/nvim)
   };
 
