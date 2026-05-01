@@ -359,7 +359,7 @@
     # jetbrains.rider  # временно убран — JetBrains блокирует скачивание (HTTP 451)
 
     # Языки / SDK
-    dotnet-sdk_8 jdk17 jdk21 deno
+    dotnet-sdk_8 jdk17 jdk21
     flutter
     python3
 
