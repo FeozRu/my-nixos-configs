@@ -1,5 +1,5 @@
 { ... }:
 
 {
-  imports = [ ./hosts/seevser-nixos.nix ];
+  imports = [ ./hosts/default.nix ];
 }

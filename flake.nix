@@ -1,10 +1,12 @@
 {
-  description = "NixOS конфигурация seevser";
+  description = "NixOS (lite)";
+
+  # Если flake.lock не обновляется (Permission denied): sudo chown "$USER" flake.lock && nix flake update
+  # Либо: mv flake.lock.new flake.lock — актуальный lock без nur/comfyui лежит рядом как шаблон.
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
-    nur.url = "github:nix-community/NUR";
 
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
@@ -22,21 +24,21 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    comfyui-nix.url = "github:utensils/comfyui-nix";
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, comfyui-nix, nur, dms, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, ... }@inputs:
     let
       lib = nixpkgs.lib;
+
+      # Единственное место: логин Linux, hostname и каталог flake (имя папки репозитория).
+      userName = "seevser";
+      hostName = "nixos";
+      flakeRepo = "nix-configs-git";
+      flakeDirectory = "/home/${userName}/${flakeRepo}";
 
       pkgs-stable = import nixpkgs-stable {
         system = "x86_64-linux";
         config.allowUnfree = true;
-      };
-
-      openldapNoTests = final: prev: {
-        openldap = prev.openldap.overrideAttrs (_: { doCheck = false; });
       };
 
       vivaldiLibPath = final: prev: {
@@ -50,62 +52,34 @@
         });
       };
 
-      workstationOverlays = [
-        antigravity-nix.overlays.default
-        nur.overlays.default
-        openldapNoTests
-        vivaldiLibPath
-      ];
-
-      codingOverlays = [
+      overlays = [
         antigravity-nix.overlays.default
         vivaldiLibPath
       ];
 
-      mkNixos =
-        { hostModule
-        , flakeHost
-        , overlays
-        , specialArgs
-        }:
-        nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          inherit specialArgs;
-          modules = [
-            hostModule
-            { nixpkgs.overlays = overlays; }
-            nix-flatpak.nixosModules.nix-flatpak
-            home-manager.nixosModules.home-manager
-            {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
-              home-manager.extraSpecialArgs = {
-                inherit inputs;
-                inherit flakeHost;
-              };
-              home-manager.users.seevser = import ./nixos-home.nix;
-            }
-          ];
-        };
+      specialArgs = {
+        inherit userName hostName flakeDirectory pkgs-stable;
+      };
     in
     {
-      nixosConfigurations.seevser-nixos = mkNixos {
-        hostModule = ./hosts/seevser-nixos.nix;
-        flakeHost = "seevser-nixos";
-        overlays = workstationOverlays;
-        specialArgs = {
-          inherit pkgs-stable comfyui-nix nur;
-        };
-      };
-
-      nixosConfigurations.seevser-coding = mkNixos {
-        hostModule = ./hosts/seevser-coding.nix;
-        flakeHost = "seevser-coding";
-        overlays = codingOverlays;
-        specialArgs = {
-          inherit pkgs-stable;
-        };
+      nixosConfigurations.${hostName} = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        inherit specialArgs;
+        modules = [
+          ./hosts/default.nix
+          { nixpkgs.overlays = overlays; }
+          nix-flatpak.nixosModules.nix-flatpak
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.backupFileExtension = "backup";
+            home-manager.extraSpecialArgs = {
+              inherit inputs userName hostName flakeDirectory;
+            };
+            home-manager.users.${userName} = import ./nixos-home.nix;
+          }
+        ];
       };
     };
 }

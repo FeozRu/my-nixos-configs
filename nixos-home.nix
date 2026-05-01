@@ -1,4 +1,4 @@
-{ config, pkgs, lib, inputs, flakeHost ? "seevser-nixos", ... }:
+{ config, pkgs, lib, inputs, userName, hostName, flakeDirectory, ... }:
 
 {
   imports = [
@@ -6,10 +6,10 @@
     ./modules/home/filemanager1.nix
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
-  ] ++ lib.optionals (flakeHost == "seevser-nixos") [ ./modules/home/steamtinkerlaunch.nix ];
+  ];
 
-  home.username = "seevser";
-  home.homeDirectory = "/home/seevser";
+  home.username = userName;
+  home.homeDirectory = "/home/${userName}";
   home.stateVersion = "25.05";
 
   home.packages = with pkgs; [
@@ -83,16 +83,10 @@
     '';
 
     shellAliases = {
-      rebuild = "sudo nixos-rebuild switch --flake /home/seevser/nix-configs-git#${flakeHost}";
-      update = "sudo nix flake update --flake /home/seevser/nix-configs-git && sudo nixos-rebuild switch --flake /home/seevser/nix-configs-git#${flakeHost}";
+      rebuild = "sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
+      update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
       cleanup = "sudo nix-collect-garbage -d";
-      nixedit = "nvim /home/seevser/nix-configs-git/flake.nix";
-
-      dcu = "podman-compose up -d";
-      dcd = "podman-compose down";
-      dcl = "podman-compose logs -f";
-      dps = "podman ps";
-      dpsa = "podman ps -a";
+      nixedit = "nvim ${flakeDirectory}/flake.nix";
 
       gs = "git status";
       gd = "git diff";

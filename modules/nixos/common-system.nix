@@ -1,7 +1,7 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, userName, ... }:
 
 {
-  # Загрузчик (GRUB + EFI) — useOSProber переопределяется на хосте (coding: false)
+  # Загрузчик (GRUB + EFI) — useOSProber переопределяется на хосте
   boot.loader = {
     efi.canTouchEfiVariables = true;
     grub = {
@@ -160,9 +160,9 @@
   users.defaultUserShell = pkgs.zsh;
   environment.shells = with pkgs; [ zsh ];
 
-  users.users.seevser = {
+  users.users.${userName} = {
     isNormalUser = true;
-    description = "seevser";
+    description = userName;
     extraGroups = [
       "wheel"
       "networkmanager"
