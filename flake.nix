@@ -50,6 +50,18 @@
             (final: prev: {
               openldap = prev.openldap.overrideAttrs (_: { doCheck = false; });
             })
+            # Vivaldi: в nixpkgs в libPath указан несуществующий $out/opt/vivaldi/lib;
+            # libffmpeg.so лежит в $out/opt/vivaldi — без исправления vivaldi-bin не стартует.
+            (final: prev: {
+              vivaldi = prev.vivaldi.overrideAttrs (old: let
+                libPathFixed =
+                  final.lib.replaceStrings [ ":$out/opt/vivaldi/lib" ] [ ":$out/opt/vivaldi" ] old.libPath;
+              in {
+                libPath = libPathFixed;
+                buildPhase = final.lib.replaceStrings [ old.libPath ] [ libPathFixed ] old.buildPhase;
+                installPhase = final.lib.replaceStrings [ old.libPath ] [ libPathFixed ] old.installPhase;
+              });
+            })
           ];
         }
 
