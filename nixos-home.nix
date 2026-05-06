@@ -13,7 +13,7 @@
   home.stateVersion = "25.05";
 
   home.packages = with pkgs; [
-    zsh-powerlevel10k
+    #zsh-powerlevel10k
     meslo-lgs-nf
 
     yazi
@@ -36,75 +36,46 @@
     };
   };
 
-  programs.zsh = {
+  programs.fish = {
     enable = true;
-    dotDir = "${config.xdg.configHome}/zsh";
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-    enableCompletion = true;
-
-    history = {
-      size = 10000;
-      save = 10000;
-      ignoreDups = true;
-      share = true;
-    };
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "extract" ];
-    };
-
-    initContent = ''
-      # === Powerlevel10k instant prompt ===
-      if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-        source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
-      fi
-
-      # === Powerlevel10k theme ===
-      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-      [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-      # === SDKMAN ===
-      export SDKMAN_DIR="$HOME/.sdkman"
-      [[ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]] && source "$HOME/.sdkman/bin/sdkman-init.sh"
-
-      # === .NET tools ===
-      export PATH="$PATH:$HOME/.dotnet/tools"
-      # === Yazi shell wrapper ===
-      function y() {
-        local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
-        yazi "$@" --cwd-file="$tmp"
-        if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-          builtin cd -- "$cwd"
-        fi
-        rm -f -- "$tmp"
-      }
-    '';
 
     shellAliases = {
+      ssh = "kitty +kitten ssh";
+
+      vim = "nvim";
+      vi = "nvim";
+
       rebuild = "sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
       update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
       cleanup = "sudo nix-collect-garbage -d";
       nixedit = "nvim ${flakeDirectory}/flake.nix";
 
-      gs = "git status";
-      gd = "git diff";
-      gp = "git push";
-      gl = "git pull";
-      gco = "git checkout";
-      gcm = "git commit -m";
+    interactiveShellInit = ''
+      # === .NET tools ===
+      fish_add_path $HOME/.dotnet/tools
 
-      vim = "nvim";
-      vi = "nvim";
+      # === SDKMAN ===
+      set -x SDKMAN_DIR $HOME/.sdkman
 
-      y = "yazi";
+      # === Yazi shell wrapper ===
+      function y
+        set tmp (mktemp -t yazi-cwd.XXXXXX)
+        yazi $argv --cwd-file=$tmp
+        set cwd (command cat -- $tmp)
+        if test -n "$cwd" -a "$cwd" != "$PWD"
+          builtin cd -- $cwd
+        end
+        rm -f -- $tmp
+      end
+    '';
     };
   };
-
+  
   programs.kitty = {
     enable = true;
+    shellIntegration.enableFishIntegration = true;
     settings = {
+      shell = "${pkgs.fish}/bin/fish";
       font_family = "MesloLGS NF";
       bold_font = "auto";
       italic_font = "auto";
@@ -166,7 +137,7 @@
 
   programs.pay-respects = {
     enable = true;
-    enableZshIntegration = true;
+    enableFishIntegration = true;
   };
 
   programs.htop = {

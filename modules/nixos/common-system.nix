@@ -156,9 +156,9 @@
     freetype
   ];
 
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
-  environment.shells = with pkgs; [ zsh ];
+  programs.fish.enable = true;
+  users.defaultUserShell = pkgs.fish;
+  environment.shells = with pkgs; [ fish ];
 
   users.users.${userName} = {
     isNormalUser = true;
@@ -168,7 +168,7 @@
       "networkmanager"
       "video"
     ];
-    shell = pkgs.zsh;
+    shell = pkgs.fish;
   };
 
   nixpkgs.config = {
@@ -176,7 +176,7 @@
     joypixels.acceptLicense = true;
   };
 
-  services.openssh.enable = false;
+  services.openssh.enable = true;
   services.printing.enable = true;
   services.timesyncd.enable = true;
 

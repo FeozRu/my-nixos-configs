@@ -31,9 +31,9 @@
       lib = nixpkgs.lib;
 
       # Единственное место: логин Linux, hostname и каталог flake (имя папки репозитория).
-      userName = "seevser";
+      userName = "sebyanin";
       hostName = "nixos";
-      flakeRepo = "nix-configs-git";
+      flakeRepo = "my-nixos-configs";
       flakeDirectory = "/home/${userName}/${flakeRepo}";
 
       pkgs-stable = import nixpkgs-stable {

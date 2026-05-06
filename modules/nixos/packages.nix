@@ -17,6 +17,8 @@
     telegram-desktop thunderbird
     vesktop
 
+    ventoy
+
     vlc
     pavucontrol
     inkscape
