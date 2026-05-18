@@ -35,6 +35,7 @@
     dbeaver-bin
     bruno
     pkgs.nodejs
+    opencode
 
     dotnet-sdk_8 jdk21
     python3

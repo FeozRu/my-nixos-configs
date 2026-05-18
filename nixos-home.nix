@@ -50,6 +50,7 @@
       update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
       cleanup = "sudo nix-collect-garbage -d";
       nixedit = "nvim ${flakeDirectory}/flake.nix";
+    };
 
     interactiveShellInit = ''
       # === .NET tools ===
@@ -69,7 +70,6 @@
         rm -f -- $tmp
       end
     '';
-    };
   };
   
   programs.kitty = {
