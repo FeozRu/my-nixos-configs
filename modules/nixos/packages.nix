@@ -16,8 +16,11 @@
 
     telegram-desktop thunderbird
     vesktop
+    dissent
+    kdePackages.krdc
+    teamspeak6-client
 
-    ventoy
+    ventoy-full-gtk
 
     vlc
     pavucontrol
@@ -43,7 +46,7 @@
 
     wireguard-tools networkmanager-openvpn
 
-    gparted btrfs-progs efibootmgr
+    gparted btrfs-progs efibootmgr xorg.xhost
 
     waybar swaynotificationcenter fuzzel awww xwayland-satellite
     wl-clipboard grim slurp satty

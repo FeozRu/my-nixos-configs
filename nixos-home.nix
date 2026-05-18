@@ -44,6 +44,7 @@
 
       vim = "nvim";
       vi = "nvim";
+      "ventoy-gui" = "xhost +SI:localuser:root && command ventoy-gui";
 
       rebuild = "sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
       update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
@@ -184,5 +185,46 @@
     size = 24;
     gtk.enable = true;
     x11.enable = true;
+  };
+
+  # Фиксация громкости микрофона USB Advanced Audio Device на 100%.
+  # Приложения (Chromium и т.д.) любят дёргать громкость через AGC —
+  # этот сервис мгновенно возвращает её обратно.
+  systemd.user.services.mic-volume-lock = {
+    Unit = {
+      Description = "Lock USB Advanced Audio Device mic volume at 100%";
+      After = [ "pipewire.service" "wireplumber.service" ];
+      Requires = [ "pipewire.service" "wireplumber.service" ];
+    };
+    Service = {
+      Type = "simple";
+      Restart = "always";
+      RestartSec = 3;
+      ExecStart = let
+        script = pkgs.writeShellScript "mic-volume-lock" ''
+          NODE_NAME="alsa_input.usb-C-Media_Electronics_Inc._USB_Advanced_Audio_Device-00.analog-stereo"
+          TARGET_VOL="1.00"
+
+          # Выставляем громкость при старте
+          ${pkgs.wireplumber}/bin/wpctl set-volume "$(
+            ${pkgs.wireplumber}/bin/wpctl status | 
+            ${pkgs.gnugrep}/bin/grep -oP '\d+(?=\.\s+USB Advanced Audio Device Analog Stereo)' |
+            head -1
+          )" "$TARGET_VOL" 2>/dev/null || true
+
+          # Слушаем изменения через pw-dump --monitor и реагируем
+          ${pkgs.pipewire}/bin/pw-dump --monitor --no-colors 2>/dev/null |
+            ${pkgs.gnugrep}/bin/grep --line-buffered "$NODE_NAME" |
+            while read -r _line; do
+              ${pkgs.wireplumber}/bin/wpctl set-volume "$(
+                ${pkgs.wireplumber}/bin/wpctl status |
+                ${pkgs.gnugrep}/bin/grep -oP '\d+(?=\.\s+USB Advanced Audio Device Analog Stereo)' |
+                head -1
+              )" "$TARGET_VOL" 2>/dev/null || true
+            done
+        '';
+      in "${script}";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 }

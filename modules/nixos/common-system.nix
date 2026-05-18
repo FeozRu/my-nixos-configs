@@ -174,6 +174,9 @@
   nixpkgs.config = {
     allowUnfree = true;
     joypixels.acceptLicense = true;
+    permittedInsecurePackages = [
+      "ventoy-gtk3-1.1.12"
+    ];
   };
 
   services.openssh.enable = true;
