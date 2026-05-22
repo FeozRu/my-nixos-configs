@@ -51,7 +51,10 @@
   xdg.portal = {
     enable = true;
     extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gnome ];
-    config.common.default = "*";
+    config.common = {
+      default = [ "kde" "gnome" ];
+      "org.freedesktop.portal.Settings" = [ "kde" ];
+    };
   };
 
   services.pulseaudio.enable = false;

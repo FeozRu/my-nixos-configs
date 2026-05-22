@@ -36,6 +36,9 @@
     bruno
     pkgs.nodejs
     opencode
+    gradle
+    kotlin
+    binaryen
 
     dotnet-sdk_8 jdk21
     python3
@@ -47,7 +50,7 @@
 
     wireguard-tools networkmanager-openvpn
 
-    gparted btrfs-progs efibootmgr xorg.xhost
+    gparted btrfs-progs efibootmgr xhost
 
     waybar swaynotificationcenter fuzzel awww xwayland-satellite
     wl-clipboard grim slurp satty
