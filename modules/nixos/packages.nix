@@ -76,5 +76,6 @@
     bitwarden-desktop keepassxc
 
     moonlight-qt
+    steam
   ];
 }
