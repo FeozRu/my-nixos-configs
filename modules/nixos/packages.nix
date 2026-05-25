@@ -77,5 +77,6 @@
 
     moonlight-qt
     steam
+    lutris
   ];
 }

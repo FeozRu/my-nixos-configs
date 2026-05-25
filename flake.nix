@@ -24,9 +24,15 @@
       url = "github:jacopone/antigravity-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, plasma-manager, ... }@inputs:
     let
       lib = nixpkgs.lib;
 
@@ -77,7 +83,12 @@
             home-manager.extraSpecialArgs = {
               inherit inputs userName hostName flakeDirectory;
             };
-            home-manager.users.${userName} = import ./nixos-home.nix;
+            home-manager.users.${userName} = {
+              imports = [
+                (import ./nixos-home.nix)
+                plasma-manager.homeManagerModules.plasma-manager
+              ];
+            };
           }
         ];
       };

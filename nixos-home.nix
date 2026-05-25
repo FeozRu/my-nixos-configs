@@ -198,13 +198,14 @@
     };
   };
 
-  xdg.configFile."kdeglobals".text = ''
-    [General]
-    ColorScheme=BreezeDark
-
-    [KDE]
-    LookAndFeelPackage=org.kde.breezedark.desktop
-  '';
+  programs.plasma = {
+    enable = true;
+    workspace = {
+      lookAndFeel = "org.kde.breezedark.desktop";
+      colorScheme = "BreezeDark";
+      theme = "breeze-dark";
+    };
+  };
 
   home.pointerCursor = {
     name = "breeze_cursors";
