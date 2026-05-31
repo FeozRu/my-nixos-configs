@@ -73,10 +73,10 @@
       rm -f "$FILE"
     '')
 
-    bitwarden-desktop keepassxc
 
     moonlight-qt
     steam
-    lutris
+    pkgs-stable.lutris
+
   ];
 }

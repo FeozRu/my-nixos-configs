@@ -6,7 +6,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
 
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
@@ -25,14 +25,9 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    plasma-manager = {
-      url = "github:nix-community/plasma-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-    };
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, plasma-manager, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, ... }@inputs:
     let
       lib = nixpkgs.lib;
 
@@ -61,9 +56,6 @@
       overlays = [
         antigravity-nix.overlays.default
         vivaldiLibPath
-        # Workaround: openldap-2.6.13 test017-syncreplication-refresh flaky (nixpkgs#516392).
-        # Убрать, когда фикс попадёт в nixos-unstable.
-        (final: prev: { openldap = prev.openldap.overrideAttrs (_: { doCheck = false; }); })
       ];
 
       specialArgs = {
@@ -89,7 +81,6 @@
             home-manager.users.${userName} = {
               imports = [
                 (import ./nixos-home.nix)
-                plasma-manager.homeModules.plasma-manager
               ];
             };
           }

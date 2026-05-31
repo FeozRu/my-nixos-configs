@@ -46,14 +46,11 @@
     wayland.enable = true;
   };
 
-  services.desktopManager.plasma6.enable = true;
-
   xdg.portal = {
     enable = true;
-    extraPortals = [ pkgs.kdePackages.xdg-desktop-portal-kde pkgs.xdg-desktop-portal-gnome ];
+    extraPortals = [ pkgs.xdg-desktop-portal-gnome ];
     config.common = {
-      default = [ "kde" "gnome" ];
-      "org.freedesktop.portal.Settings" = [ "kde" ];
+      default = [ "gnome" ];
     };
   };
 
@@ -199,6 +196,23 @@
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+
+  # Ограничиваем ресурсы сборки — Ryzen 3600 (6 ядер / 12 потоков).
+  # cores = 6 → половина потоков на одну сборку.
+  # max-jobs = 1 → одна сборка за раз, чтобы суммарно не превышать 6 потоков.
+  nix.settings.cores = 6;
+  nix.settings.max-jobs = 1;
+
+  # Жёсткий лимит nix-daemon через cgroup:
+  # CPUQuota 50% — демон физически не может занять больше половины CPU.
+  systemd.services.nix-daemon.serviceConfig = {
+    CPUQuota = "50%";
+    MemoryMax = "8G";
+    Nice = 19;
+    CPUWeight = 20;
+    IOSchedulingClass = lib.mkForce "idle";
+    IOSchedulingPriority = lib.mkForce 7;
+  };
 
   nix.settings.substituters = [
     "https://cache.nixos.org"

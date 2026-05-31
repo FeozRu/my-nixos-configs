@@ -42,6 +42,7 @@
 
     shellAliases = {
       ssh = "kitty +kitten ssh";
+      sshp = "command ssh";  # ssh без kitty kitten (для хостов без base64)
 
       vim = "nvim";
       vi = "nvim";
@@ -189,7 +190,7 @@
 
   qt = {
     enable = true;
-    platformTheme.name = "kde";
+    platformTheme.name = "qtct";
     style.name = "breeze";
   };
 
@@ -199,14 +200,7 @@
     };
   };
 
-  programs.plasma = {
-    enable = true;
-    workspace = {
-      lookAndFeel = "org.kde.breezedark.desktop";
-      colorScheme = "BreezeDark";
-      theme = "breeze-dark";
-    };
-  };
+
 
   home.pointerCursor = {
     name = "breeze_cursors";
