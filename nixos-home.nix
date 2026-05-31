@@ -11,6 +11,7 @@
   home.username = userName;
   home.homeDirectory = "/home/${userName}";
   home.stateVersion = "25.05";
+  home.enableNixpkgsReleaseCheck = false; # На unstable версии HM и nixpkgs бампаются не синхронно — это нормально
 
   home.packages = with pkgs; [
     #zsh-powerlevel10k

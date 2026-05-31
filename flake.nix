@@ -61,6 +61,9 @@
       overlays = [
         antigravity-nix.overlays.default
         vivaldiLibPath
+        # Workaround: openldap-2.6.13 test017-syncreplication-refresh flaky (nixpkgs#516392).
+        # Убрать, когда фикс попадёт в nixos-unstable.
+        (final: prev: { openldap = prev.openldap.overrideAttrs (_: { doCheck = false; }); })
       ];
 
       specialArgs = {
@@ -86,7 +89,7 @@
             home-manager.users.${userName} = {
               imports = [
                 (import ./nixos-home.nix)
-                plasma-manager.homeManagerModules.plasma-manager
+                plasma-manager.homeModules.plasma-manager
               ];
             };
           }
