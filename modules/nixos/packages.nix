@@ -2,7 +2,7 @@
 
 {
   environment.systemPackages = with pkgs; [
-    wget curl git neovim htop
+    wget curl jq git neovim htop
     lazygit ripgrep fd fzf tree-sitter
     unzip p7zip less
     gum
