@@ -71,6 +71,22 @@
         end
         rm -f -- $tmp
       end
+
+      # === MiMo Code updater ===
+      function mimo-update
+        set ver (curl -s https://registry.npmjs.org/@mimo-ai/mimocode-linux-x64/latest | jq -r .version)
+        if test -z "$ver" -o "$ver" = "null"
+          echo "Failed to fetch latest version" >&2
+          return 1
+        end
+        set url "https://registry.npmjs.org/@mimo-ai/mimocode-linux-x64/-/mimocode-linux-x64-$ver.tgz"
+        echo "Fetching version $ver ..."
+        set hash (nix hash to-sri --type sha512 (nix-prefetch-url "$url"))
+        echo ""
+        echo "version = \"$ver\";"
+        echo "url     = \"$url\";"
+        echo "hash    = \"$hash\";"
+      end
     '';
   };
   
