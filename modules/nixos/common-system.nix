@@ -229,5 +229,12 @@
     binfmt = true;
   };
 
+  programs.obs-studio = {
+    enable = true;
+    plugins = with pkgs.obs-studio-plugins; [
+      obs-vaapi # плагин для вывода кодировщика VAAPI в OBS
+    ];
+  };
+
   system.stateVersion = "25.05";
 }
