@@ -1,5 +1,107 @@
 { config, pkgs, lib, inputs, userName, hostName, flakeDirectory, ... }:
 
+let
+  ruRuCp1251Locale = pkgs.runCommand "ru_RU-cp1251-locale" { } ''
+    mkdir -p "$out/lib/locale"
+    ${pkgs.glibc.bin}/bin/localedef --no-archive -i ru_RU -f CP1251 "$out/lib/locale/ru_RU.CP1251"
+  '';
+
+  portProtonWineLibraryPath = lib.makeLibraryPath (
+    (with pkgs; [
+      stdenv.cc.cc.lib
+      zlib
+      zstd
+      alsa-lib
+      fontconfig
+      freetype
+      expat
+      libpulseaudio
+      libdrm
+      libgbm
+      mesa
+      libusb1
+      vulkan-loader
+      libglvnd
+      wayland
+      libxkbcommon
+      libx11
+      libxext
+      libxcursor
+      libxrandr
+      libxrender
+      libxi
+      libxtst
+      libxxf86vm
+      libxcomposite
+      libxfixes
+      libxinerama
+      libxdamage
+    ])
+    ++
+    (with pkgs.pkgsi686Linux; [
+      stdenv.cc.cc.lib
+      zlib
+      zstd
+      alsa-lib
+      fontconfig
+      freetype
+      expat
+      libpulseaudio
+      libdrm
+      libgbm
+      mesa
+      libusb1
+      vulkan-loader
+      libglvnd
+      wayland
+      libxkbcommon
+      libx11
+      libxext
+      libxcursor
+      libxrandr
+      libxrender
+      libxi
+      libxtst
+      libxxf86vm
+      libxcomposite
+      libxfixes
+      libxinerama
+      libxdamage
+    ])
+  );
+
+  portProtonNixosEnv = pkgs.writeShellScript "portproton-nixos-env" ''
+    # pressure-vessel на NixOS ломает LD_LIBRARY_PATH и тащит nix-ld.
+    export PW_USE_RUNTIME="0"
+    unset NIX_LD
+    unset NIX_LD_LIBRARY_PATH
+    unset GIO_EXTRA_MODULES
+    unset GTK_PATH
+    export GSETTINGS_BACKEND=memory
+    export LOCPATH="${ruRuCp1251Locale}/lib/locale:''${LOCPATH:-}"
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib:/run/opengl-driver-32/lib:${portProtonWineLibraryPath}:''${LD_LIBRARY_PATH:-}"
+    export LANG="ru_RU.CP1251"
+    export LC_ALL="ru_RU.CP1251"
+    export LANGUAGE="ru_RU"
+    export PW_LOCALE_SELECT="ru_RU.CP1251"
+  '';
+
+  portProtonQt = pkgs.writeShellScriptBin "portprotonqt-nixos" ''
+    source ${portProtonNixosEnv}
+    exec /home/${userName}/Applications/PortProtonQt/AppRun "$@"
+  '';
+
+  # Прямой запуск для проверки: обходит pressure-vessel внутри PortProton.
+  fraterPortproton = pkgs.writeShellScriptBin "frater-portproton" ''
+    source ${portProtonNixosEnv}
+    export WINEPREFIX="/home/${userName}/PortProtonQt/data/prefixes/FRATER"
+    export WINE="/home/${userName}/PortProtonQt/data/dist/WINE_LG_11-10/bin/wine"
+    export WINESERVER="/home/${userName}/PortProtonQt/data/dist/WINE_LG_11-10/bin/wineserver"
+    export WINEDEBUG="-all"
+    cd "$WINEPREFIX/drive_c/Program Files (x86)/Frater" || exit 1
+    exec "$WINE" ./frater.exe "$@"
+  '';
+in
 {
   imports = [
     ./modules/home/niri-dms.nix
@@ -24,7 +126,40 @@
     poppler-utils
     bottom
     mdcat
+    portProtonQt
+    fraterPortproton
   ];
+
+  home.file.".local/share/portproton-nixos/env.sh".source = portProtonNixosEnv;
+
+  home.activation.portprotonNixosUserConf = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    env_script="${portProtonNixosEnv}"
+    mkdir -p "$HOME/.local/share/portproton-nixos"
+    ln -sfn "$env_script" "$HOME/.local/share/portproton-nixos/env.sh"
+
+    user_conf="$HOME/PortProtonQt/data/user.conf"
+    if [ ! -f "$user_conf" ]; then
+      exit 0
+    fi
+
+    marker_start="# portproton-nixos-start"
+    marker_end="# portproton-nixos-end"
+
+    # Убрать старый однострочный source и предыдущий managed-блок.
+    sed -i '/portproton-nixos-env/d' "$user_conf"
+    if grep -q "$marker_start" "$user_conf"; then
+      sed -i "/$marker_start/,/$marker_end/d" "$user_conf"
+    fi
+
+    cat >> "$user_conf" << EOF
+
+$marker_start
+# Managed by home-manager — не редактировать вручную
+export PW_USE_RUNTIME="0"
+. "$env_script"
+$marker_end
+EOF
+  '';
 
   programs.git = {
     enable = true;
@@ -182,6 +317,16 @@
     XCURSOR_THEME = "breeze_cursors";
     XCURSOR_SIZE = "24";
     GTK_THEME = "Breeze-Dark";
+  };
+
+  xdg.desktopEntries.portprotonqt = {
+    name = "PortProtonQt";
+    comment = "Manage and launch Windows games on Linux";
+    exec = "${portProtonQt}/bin/portprotonqt-nixos";
+    icon = "applications-games";
+    terminal = false;
+    type = "Application";
+    categories = [ "Game" ];
   };
 
   programs.home-manager.enable = true;

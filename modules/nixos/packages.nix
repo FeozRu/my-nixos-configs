@@ -75,7 +75,6 @@
 
 
     moonlight-qt
-    steam
     pkgs-stable.lutris
     qbittorrent
 

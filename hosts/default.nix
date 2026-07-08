@@ -14,5 +14,5 @@
 
   boot.loader.grub.useOSProber = false;
 
-  services.pipewire.alsa.support32Bit = false;
+  services.pipewire.alsa.support32Bit = true;
 }

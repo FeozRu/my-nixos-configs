@@ -1,5 +1,74 @@
 { config, pkgs, lib, userName, ... }:
 
+let
+  # Пути к системным библиотекам для ldconfig cache
+  # (нужен pressure-vessel / capsule-capture-libs в PortProtonQT / Steam)
+  ldcacheConf = pkgs.writeText "ld.so.conf" (lib.concatMapStringsSep "\n" (pkg: "${pkg}/lib") (
+    # 64-bit
+    (with pkgs; [
+      glibc
+      stdenv.cc.cc.lib
+      mesa
+      libdrm
+      libgbm
+      libusb1
+      vulkan-loader
+      libglvnd
+      wayland
+      libxkbcommon
+      zlib
+      zstd
+      alsa-lib
+      fontconfig
+      freetype
+      expat
+      libpulseaudio
+      libx11
+      libxext
+      libxrandr
+      libxcursor
+      libxrender
+      libxi
+      libxtst
+      libxxf86vm
+      libxcomposite
+      libxfixes
+      libxinerama
+      libxdamage
+    ])
+    ++
+    # 32-bit (нужно Wine)
+    (with pkgs.pkgsi686Linux; [
+      glibc
+      stdenv.cc.cc.lib
+      mesa
+      libdrm
+      libgbm
+      libusb1
+      vulkan-loader
+      libglvnd
+      zlib
+      zstd
+      alsa-lib
+      fontconfig
+      freetype
+      expat
+      libpulseaudio
+      libx11
+      libxext
+      libxrandr
+      libxcursor
+      libxrender
+      libxi
+      libxtst
+      libxxf86vm
+      libxcomposite
+      libxfixes
+      libxinerama
+      libxdamage
+    ])
+  ));
+in
 {
   # Загрузчик (GRUB + EFI) — useOSProber переопределяется на хосте
   boot.loader = {
@@ -154,6 +223,49 @@
     alsa-lib
     fontconfig
     freetype
+    # Графика / Vulkan (pressure-vessel, Wine/Proton)
+    mesa
+    libdrm
+    libgbm
+    zstd
+    vulkan-loader
+    libglvnd
+    wayland
+    libxkbcommon
+    # Звук / X11 extensions (драйверы дисплея и аудио Wine)
+    libpulseaudio
+    libxcomposite
+    libxfixes
+    libxinerama
+    libxdamage
+    # 32-bit Wine/Proton dependencies for AppImage/FHS launchers.
+    pkgsi686Linux.stdenv.cc.cc.lib
+    pkgsi686Linux.zlib
+    pkgsi686Linux.alsa-lib
+    pkgsi686Linux.fontconfig
+    pkgsi686Linux.freetype
+    pkgsi686Linux.libpulseaudio
+    pkgsi686Linux.libdrm
+    pkgsi686Linux.libgbm
+    pkgsi686Linux.mesa
+    pkgsi686Linux.zstd
+    pkgsi686Linux.libusb1
+    pkgsi686Linux.vulkan-loader
+    pkgsi686Linux.libglvnd
+    pkgsi686Linux.wayland
+    pkgsi686Linux.libxkbcommon
+    pkgsi686Linux.libx11
+    pkgsi686Linux.libxext
+    pkgsi686Linux.libxcursor
+    pkgsi686Linux.libxrandr
+    pkgsi686Linux.libxrender
+    pkgsi686Linux.libxi
+    pkgsi686Linux.libxtst
+    pkgsi686Linux.libxxf86vm
+    pkgsi686Linux.libxcomposite
+    pkgsi686Linux.libxfixes
+    pkgsi686Linux.libxinerama
+    pkgsi686Linux.libxdamage
   ];
 
   programs.fish.enable = true;
@@ -187,7 +299,26 @@
 
   systemd.tmpfiles.rules = [
     "L+ /usr/bin/sh - - - - ${pkgs.bash}/bin/sh"
+    "L+ /usr/bin/true - - - - ${pkgs.coreutils}/bin/true"
+    # 32-битный линкер для Wine
+    "L+ /lib/ld-linux.so.2 - - - - ${pkgs.pkgsi686Linux.glibc}/lib/ld-linux.so.2"
+    # pressure-vessel ожидает эти утилиты по FHS-путям
+    "L+ /usr/sbin/ldconfig - - - - ${pkgs.glibc.bin}/bin/ldconfig"
+    "L+ /sbin/ldconfig - - - - ${pkgs.glibc.bin}/bin/ldconfig"
+    "L+ /usr/bin/ldd - - - - ${pkgs.glibc.bin}/bin/ldd"
+    "L+ /usr/bin/locale - - - - ${pkgs.glibc.bin}/bin/locale"
+    "L+ /usr/bin/localedef - - - - ${pkgs.glibc.bin}/bin/localedef"
   ];
+
+  # pressure-vessel / capsule-capture-libs читает /var/cache/ldconfig/ld.so.cache,
+  # а glibc ld.so и capsule-capture-libs резолвят зависимости через /etc/ld.so.cache
+  system.activationScripts.ldconfig = {
+    text = ''
+      mkdir -p /var/cache/ldconfig
+      ${pkgs.glibc.bin}/bin/ldconfig -f ${ldcacheConf} -C /var/cache/ldconfig/ld.so.cache 2>/dev/null || true
+      ${pkgs.glibc.bin}/bin/ldconfig -f ${ldcacheConf} -C /etc/ld.so.cache 2>/dev/null || true
+    '';
+  };
 
   nix.gc = {
     automatic = true;
@@ -227,6 +358,19 @@
   programs.appimage = {
     enable = true;
     binfmt = true;
+  };
+
+  programs.gamemode.enable = true;
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    gamescopeSession.enable = true;
+    protontricks.enable = true;
+    extraCompatPackages = with pkgs; [
+      proton-ge-bin
+    ];
   };
 
   programs.obs-studio = {
