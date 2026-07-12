@@ -108,12 +108,21 @@ in
     ./modules/home/filemanager1.nix
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
+    ./modules/home/pmbootstrap-git.nix
   ];
 
   home.username = userName;
   home.homeDirectory = "/home/${userName}";
   home.stateVersion = "25.05";
   home.enableNixpkgsReleaseCheck = false; # На unstable версии HM и nixpkgs бампаются не синхронно — это нормально
+
+  # Vendor ID для adb (Xiaomi POCO X3 NFC, Google fastboot, UBports)
+  home.file.".android/adb_usb.ini".text = ''
+    0x2717
+    0x18d1
+    0x2ae5
+    0x05c6
+  '';
 
   home.packages = with pkgs; [
     #zsh-powerlevel10k

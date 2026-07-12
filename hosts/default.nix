@@ -8,6 +8,7 @@
     ../modules/nixos/packages.nix
     ../modules/nixos/flatpak.nix
     ../modules/nixos/mimo-code.nix
+    ../modules/nixos/mobile-flashing.nix
   ];
 
   networking.hostName = hostName;
