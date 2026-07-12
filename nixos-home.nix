@@ -95,6 +95,10 @@ let
   fraterPortproton = pkgs.writeShellScriptBin "frater-portproton" ''
     source ${portProtonNixosEnv}
     export WINEPREFIX="/home/${userName}/PortProtonQt/data/prefixes/FRATER"
+    # Locale CP1251 не трогаем; только US keyboard preload для WASD.
+    if [[ -f "$WINEPREFIX/user.reg" ]]; then
+      sed -i 's/"1"="00000419"/"1"="00000409"/' "$WINEPREFIX/user.reg"
+    fi
     export WINE="/home/${userName}/PortProtonQt/data/dist/WINE_LG_11-10/bin/wine"
     export WINESERVER="/home/${userName}/PortProtonQt/data/dist/WINE_LG_11-10/bin/wineserver"
     export WINEDEBUG="-all"
