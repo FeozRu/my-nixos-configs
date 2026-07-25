@@ -56,7 +56,20 @@
       on   = "T"
       run  = "plugin toggle-pane max-preview"
       desc = "Maximize or restore the preview pane"
+
+      [[mgr.prepend_keymap]]
+      on   = ","
+      run  = "plugin actions -- hovered"
+      desc = "Actions menu (hovered file)"
+
+      [[mgr.prepend_keymap]]
+      on   = ";"
+      run  = "plugin actions -- selected"
+      desc = "Actions menu (selected files)"
     '';
+
+    "yazi/plugins/actions.yazi/main.lua".source =
+      ./yazi/plugins/actions.yazi/main.lua;
   };
 
   home.activation.yaziMimeCache = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

@@ -135,6 +135,7 @@ in
     yazi
     chafa
     ueberzugpp
+    ffmpeg
     ffmpegthumbnailer
     poppler-utils
     bottom
