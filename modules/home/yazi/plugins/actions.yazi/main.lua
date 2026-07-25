@@ -178,6 +178,25 @@ local function run_ffmpeg(kind, videos)
 	})
 end
 
+local function open_with_apps(targets)
+	local args = {}
+	for _, t in ipairs(targets) do
+		args[#args + 1] = tostring(t.url)
+	end
+
+	local permit = ui.hide()
+	local status, err = Command("yazi-open-with"):arg(args):status()
+	permit:drop()
+
+	if not status then
+		return notify("error", tostring(err))
+	end
+	-- fuzzel cancel / no selection exits non-zero; ignore that
+	if not status.success and status.code ~= 0 and status.code ~= 1 then
+		notify("warn", "Open with cancelled or failed")
+	end
+end
+
 local function ffmpeg_menu(mode, targets)
 	local videos, skipped = video_targets(targets)
 	if #videos == 0 then
@@ -226,11 +245,7 @@ local function root_menu(mode, targets)
 		end
 
 		if id == "open" then
-			if mode == "hovered" then
-				ya.emit("open", { interactive = true, hovered = true })
-			else
-				ya.emit("open", { interactive = true })
-			end
+			open_with_apps(targets)
 			return
 		elseif id == "ffmpeg" then
 			local result = ffmpeg_menu(mode, targets)

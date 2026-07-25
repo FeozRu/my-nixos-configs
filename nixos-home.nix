@@ -144,12 +144,14 @@ in
     fraterPortproton
   ];
 
-  home.file.".local/share/portproton-nixos/env.sh".source = portProtonNixosEnv;
+  home.file.".local/share/portproton-nixos/env.sh" = {
+    source = portProtonNixosEnv;
+    force = true;
+  };
 
   home.activation.portprotonNixosUserConf = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     env_script="${portProtonNixosEnv}"
     mkdir -p "$HOME/.local/share/portproton-nixos"
-    ln -sfn "$env_script" "$HOME/.local/share/portproton-nixos/env.sh"
 
     user_conf="$HOME/PortProtonQt/data/user.conf"
     if [ ! -f "$user_conf" ]; then
