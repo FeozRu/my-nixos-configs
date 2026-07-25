@@ -197,7 +197,7 @@ EOF
       "ventoy-gui" = "xhost +SI:localuser:root && command ventoy-gui";
 
       rebuild = "sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
-      update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName}";
+      update = "sudo nix flake update --flake ${flakeDirectory} && sudo nixos-rebuild switch --flake ${flakeDirectory}#${hostName} && flatpak update -y";
       cleanup = "sudo nix-collect-garbage -d";
       nixedit = "nvim ${flakeDirectory}/flake.nix";
     };
