@@ -1,6 +1,13 @@
 { pkgs, pkgs-stable, ... }:
 
 {
+  environment.sessionVariables = {
+    # rust-analyzer и rustdoc
+    RUST_SRC_PATH = "${pkgs.rustPlatform.rustLibSrc}";
+    # openssl-sys: использовать системный openssl из nixpkgs, а не vendor
+    OPENSSL_NO_VENDOR = "1";
+  };
+
   environment.systemPackages = with pkgs; [
     wget curl jq git neovim htop
     lazygit ripgrep fd fzf tree-sitter
@@ -31,7 +38,7 @@
     onlyoffice-desktopeditors obsidian
 
     vscode-fhs
-    code-cursor google-antigravity
+    code-cursor google-antigravity zed-editor-fhs cursor-cli
     dbeaver-bin
     bruno
     pkgs.nodejs
@@ -44,6 +51,9 @@
     python3
 
     clang cmake ninja pkg-config gnumake gcc
+
+    rustc cargo rustfmt clippy rust-analyzer
+    llvm lldb openssl
 
     kdePackages.ark kdePackages.kate kdePackages.konsole kdePackages.kdeconnect-kde
     kdePackages.kalk kdePackages.kpat

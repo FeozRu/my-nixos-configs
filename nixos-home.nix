@@ -113,6 +113,7 @@ in
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
     ./modules/home/pmbootstrap-git.nix
+    ./modules/home/zed.nix
   ];
 
   home.username = userName;
@@ -208,6 +209,9 @@ EOF
     interactiveShellInit = ''
       # === .NET tools ===
       fish_add_path $HOME/.dotnet/tools
+
+      # === Cargo binaries (cargo install) ===
+      fish_add_path $HOME/.cargo/bin
 
       # === SDKMAN ===
       set -x SDKMAN_DIR $HOME/.sdkman
