@@ -52,7 +52,7 @@
 
     clang cmake ninja pkg-config gnumake gcc
 
-    rustc cargo rustfmt clippy rust-analyzer
+    rustc cargo rustfmt clippy rust-analyzer nixd
     llvm lldb openssl
 
     kdePackages.ark kdePackages.kate kdePackages.konsole kdePackages.kdeconnect-kde

@@ -5,7 +5,7 @@ let
 
   python = pkgs.python3.withPackages (ps: [ ps.json5 ]);
 
-  mergeCursorAgent = pkgs.writeShellScript "zed-merge-cursor-agent" ''
+  mergeZedSettings = pkgs.writeShellScript "zed-merge-settings" ''
     ${python}/bin/python3 <<'PY'
 import json5
 import json
@@ -39,6 +39,10 @@ agent_servers["cursor"] = {
     "args": ["acp"],
 }
 
+languages = data.setdefault("languages", {})
+nix = languages.setdefault("Nix", {})
+nix["language_servers"] = ["nixd", "!nil"]
+
 with open(path, "w", encoding="utf-8") as f:
     json.dump(data, f, indent=2, ensure_ascii=False)
     f.write("\n")
@@ -46,7 +50,7 @@ PY
   '';
 in
 {
-  home.activation.zedCursorAgent = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${mergeCursorAgent}
+  home.activation.zedSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${mergeZedSettings}
   '';
 }
