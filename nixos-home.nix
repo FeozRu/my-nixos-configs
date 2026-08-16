@@ -109,6 +109,7 @@ in
 {
   imports = [
     ./modules/home/niri-dms.nix
+    ./modules/home/vban-mic.nix
     ./modules/home/filemanager1.nix
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
