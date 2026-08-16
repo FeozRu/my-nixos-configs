@@ -353,9 +353,13 @@ EOF
 
   gtk = {
     enable = true;
+    # adw-gtk3 — базовая тема, которую раскрашивает DMS (matugen-цвета
+    # в ~/.config/gtk-3.0/gtk.css -> dank-colors.css используют её переменные).
+    # Только GTK3: у adw-gtk3 нет gtk-4.0, GTK4/libadwaita-приложения и так
+    # тёмные через portal color-scheme + цвета DMS из gtk-4.0/gtk.css.
     theme = {
-      name = "Breeze-Dark";
-      package = pkgs.kdePackages.breeze-gtk;
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
     };
     iconTheme = {
       name = "Papirus-Dark";

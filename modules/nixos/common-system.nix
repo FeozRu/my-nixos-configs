@@ -35,6 +35,7 @@ let
       libxfixes
       libxinerama
       libxdamage
+      libxcb
     ])
     ++
     # 32-bit (нужно Wine)
@@ -66,6 +67,7 @@ let
       libxfixes
       libxinerama
       libxdamage
+      libxcb
     ])
   ));
 in
@@ -219,6 +221,7 @@ in
     libxi
     libxtst
     libxxf86vm
+    libxcb
     libGL
     alsa-lib
     fontconfig

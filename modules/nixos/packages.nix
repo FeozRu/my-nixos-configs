@@ -52,8 +52,16 @@
 
     clang cmake ninja pkg-config gnumake gcc
 
-    rustc cargo rustfmt clippy rust-analyzer nixd
-    llvm lldb openssl
+    rustc cargo rustfmt clippy rust-analyzer nixd trunk
+    llvm lldb openssl llvmPackages.lld llvmPackages.bintools
+
+    # GPUI / Zed UI framework — native Linux dependencies (link + runtime)
+    libxcb
+    libxkbcommon
+    vulkan-loader
+    libx11
+    libxcursor
+    libxi
 
     kdePackages.ark kdePackages.kate kdePackages.konsole kdePackages.kdeconnect-kde
     kdePackages.kalk kdePackages.kpat
@@ -84,7 +92,7 @@
     '')
 
 
-    moonlight-qt
+    pkgs-stable.moonlight-qt
     pkgs-stable.lutris
     qbittorrent
 
