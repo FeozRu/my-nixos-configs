@@ -372,7 +372,11 @@ EOF
     gtk4.extraConfig = {
       gtk-application-prefer-dark-theme = 1;
     };
-    gtk4.theme = config.gtk.theme;
+    # gtk4.theme = null: не даём HM управлять gtk-4.0/gtk.css — этот файл
+    # принадлежит DMS (matugen-цвета). Иначе HM линкует gtk.css из пакета темы
+    # и конфликтует с DMS при каждой активации. GTK4/libadwaita и так тёмные
+    # через portal color-scheme + prefer-dark ниже.
+    gtk4.theme = null;
   };
 
   qt = {
