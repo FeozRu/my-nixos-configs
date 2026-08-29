@@ -30,6 +30,7 @@
     ventoy-full-gtk
 
     vlc
+    gelly
     pavucontrol
     inkscape
     pkgs-stable.krita
