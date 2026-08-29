@@ -290,7 +290,7 @@ in
     allowUnfree = true;
     joypixels.acceptLicense = true;
     permittedInsecurePackages = [
-      "ventoy-gtk3-1.1.12"
+      "ventoy-gtk3-1.1.17"
       # vesktop still depends on EOL electron_40
       "electron-40.10.5"
     ];

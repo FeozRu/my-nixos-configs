@@ -246,7 +246,7 @@ EOF
       end
     '';
   };
-  
+
   programs.kitty = {
     enable = true;
     shellIntegration.enableFishIntegration = true;
@@ -257,7 +257,8 @@ EOF
       italic_font = "auto";
       font_size = 12;
 
-      term = "xterm-kitty";
+      #term = "xterm-kitty";
+      term = "xterm-256color";
 
       background_opacity = "0.92";
       dynamic_background_opacity = true;
@@ -422,7 +423,7 @@ EOF
 
           # Выставляем громкость при старте
           ${pkgs.wireplumber}/bin/wpctl set-volume "$(
-            ${pkgs.wireplumber}/bin/wpctl status | 
+            ${pkgs.wireplumber}/bin/wpctl status |
             ${pkgs.gnugrep}/bin/grep -oP '\d+(?=\.\s+USB Advanced Audio Device Analog Stereo)' |
             head -1
           )" "$TARGET_VOL" 2>/dev/null || true
