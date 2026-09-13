@@ -20,14 +20,9 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
 
-    antigravity-nix = {
-      url = "github:jacopone/antigravity-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
   };
 
-  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, antigravity-nix, dms, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, dms, ... }@inputs:
     let
       lib = nixpkgs.lib;
 
@@ -54,7 +49,6 @@
       };
 
       overlays = [
-        antigravity-nix.overlays.default
         vivaldiLibPath
       ];
 

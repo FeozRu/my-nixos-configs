@@ -38,8 +38,7 @@
 
     onlyoffice-desktopeditors obsidian
 
-    vscode-fhs
-    code-cursor google-antigravity zed-editor-fhs cursor-cli
+    zed-editor-fhs
     dbeaver-bin
     bruno
     pkgs.nodejs

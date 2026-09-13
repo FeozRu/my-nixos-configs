@@ -1,8 +1,6 @@
 { pkgs, lib, ... }:
 
 let
-  cursorAgentExe = lib.getExe pkgs.cursor-cli;
-
   python = pkgs.python3.withPackages (ps: [ ps.json5 ]);
 
   mergeZedSettings = pkgs.writeShellScript "zed-merge-settings" ''
@@ -12,7 +10,6 @@ import json
 import os
 import sys
 
-exe = "${cursorAgentExe}"
 settings_dir = os.path.join(os.path.expanduser("~"), ".config", "zed")
 path = os.path.join(settings_dir, "settings.json")
 
@@ -32,12 +29,10 @@ if os.path.isfile(path):
 if not isinstance(data, dict):
     data = {}
 
-agent_servers = data.setdefault("agent_servers", {})
-agent_servers["cursor"] = {
-    "type": "custom",
-    "command": exe,
-    "args": ["acp"],
-}
+# Убираем agent server, который ранее прописывался этим модулем.
+agent_servers = data.get("agent_servers")
+if isinstance(agent_servers, dict):
+    agent_servers.pop("cursor", None)
 
 languages = data.setdefault("languages", {})
 nix = languages.setdefault("Nix", {})
