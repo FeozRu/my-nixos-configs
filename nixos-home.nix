@@ -113,6 +113,7 @@ in
     ./modules/home/filemanager1.nix
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
+    ./modules/home/zen.nix
     ./modules/home/pmbootstrap-git.nix
     ./modules/home/zed.nix
   ];
