@@ -114,6 +114,7 @@ in
     ./modules/home/yazi-xdg.nix
     ./modules/home/vivaldi.nix
     ./modules/home/zen.nix
+    ./modules/home/webapps.nix
     ./modules/home/pmbootstrap-git.nix
     ./modules/home/zed.nix
   ];
