@@ -323,7 +323,13 @@ EOF
     LC_NUMERIC = "ru_RU.UTF-8";
     XCURSOR_THEME = "breeze_cursors";
     XCURSOR_SIZE = "24";
-    GTK_THEME = "Breeze-Dark";
+    # GTK_THEME задаёт тёмную тему для GTK-приложений и прокидывается внутрь
+    # Flatpak-песочницы (её видит и браузер — от неё зависит prefers-color-scheme
+    # на сайтах). Значение должно совпадать с реальной темой из settings.ini
+    # (adw-gtk3-dark), а НЕ Breeze-Dark: у последней расширение
+    # org.gtk.Gtk3theme.Breeze-Dark помечено EOL, и она не совпадает с
+    # adw-gtk3-переменными, которые раскрашивает DMS.
+    GTK_THEME = "adw-gtk3-dark";
   };
 
   xdg.desktopEntries.portprotonqt = {
