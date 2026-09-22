@@ -75,6 +75,22 @@
         "type": "github"
       }
     },
+    "kadr": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1789846990,
+        "narHash": "sha256-wS/VENgsbrymPFApMPxoqFrshZ7M/RNua/GfrFkEJas=",
+        "owner": "HelpFreedom",
+        "repo": "kadr",
+        "rev": "460dfd01483848d10237361181fc3bde86adae9c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "HelpFreedom",
+        "repo": "kadr",
+        "type": "github"
+      }
+    },
     "nix-flatpak": {
       "locked": {
         "lastModified": 1767983141,
@@ -127,6 +143,7 @@
       "inputs": {
         "dms": "dms",
         "home-manager": "home-manager",
+        "kadr": "kadr",
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",

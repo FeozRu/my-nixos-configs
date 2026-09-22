@@ -31,6 +31,9 @@
 
     vlc
     gelly
+    # видеоредактор из исходников: пакет `kadr` из flake-инпута kadr,
+    # обновляется через `nix flake update kadr` (см. pkgs/kadr.nix)
+    kadr
     pavucontrol
     inkscape
     pkgs-stable.krita

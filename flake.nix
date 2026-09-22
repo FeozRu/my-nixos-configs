@@ -20,6 +20,13 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=v0.7.0";
 
+    # Исходники видеоредактора Kadr — собираются pkgs/kadr.nix.
+    # Обновление: nix flake update kadr  (у проекта нет своих релизов в nixpkgs).
+    kadr = {
+      url = "github:HelpFreedom/kadr";
+      flake = false;
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs = {
@@ -33,6 +40,7 @@
   outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, dms, ... }@inputs:
     let
       lib = nixpkgs.lib;
+      system = "x86_64-linux";
 
       # Единственное место: логин Linux, hostname и каталог flake (имя папки репозитория).
       userName = "sebyanin";
@@ -41,7 +49,7 @@
       flakeDirectory = "/home/${userName}/${flakeRepo}";
 
       pkgs-stable = import nixpkgs-stable {
-        system = "x86_64-linux";
+        inherit system;
         config.allowUnfree = true;
       };
 
@@ -56,8 +64,13 @@
         });
       };
 
+      kadr = final: prev: {
+        kadr = final.callPackage ./pkgs/kadr.nix { src = inputs.kadr; };
+      };
+
       overlays = [
         vivaldiLibPath
+        kadr
       ];
 
       specialArgs = {
@@ -65,8 +78,12 @@
       };
     in
     {
+      packages.${system} = {
+        kadr = (import nixpkgs { inherit system; overlays = [ kadr ]; }).kadr;
+      };
+
       nixosConfigurations.${hostName} = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         inherit specialArgs;
         modules = [
           ./hosts/default.nix
