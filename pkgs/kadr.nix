@@ -19,7 +19,7 @@
   buildNpmPackage,
   copyDesktopItems,
   electron_42,
-  ffmpeg,
+  ffmpeg_8,
   glib,
   importNpmLock,
   makeDesktopItem,
@@ -81,8 +81,16 @@ let
 
   # `npm`/`npx` нужны для workspace Remotion-фрагментов, `node` — для MCP-моста,
   # `gdbus` — для XDG-перетаскиваний из песочных приложений.
+  #
+  # ffmpeg именно 8, а не текущий `ffmpeg` (9.x): в девятке убрали
+  # `-filter_complex_script`, а редактор пишет граф фильтров в файл на КАЖДОМ
+  # экспорте (иначе argv упирается в MAX_ARG_STRLEN на больших таймлайнах).
+  # Симптом без этого: «ffmpeg exited 8: Unrecognized option
+  # 'filter_complex_script'» — и ни один экспорт с аудиодорожками не проходит.
+  # В 9-й ветке это `-/filter_complex <файл>`; когда апстрим перейдёт на него,
+  # пин можно снять (или переопределить через KADR_FFMPEG).
   runtimeInputs = [
-    ffmpeg
+    ffmpeg_8
     glib
     nodejs
   ]
@@ -196,6 +204,8 @@ buildNpmPackage rec {
       --add-flags $out/share/kadr \
       --set-default ELECTRON_IS_DEV 0 \
       --prefix PATH : ${lib.makeBinPath runtimeInputs} \
+      --set-default KADR_FFMPEG ${lib.getExe' ffmpeg_8 "ffmpeg"} \
+      --set-default KADR_FFPROBE ${lib.getExe' ffmpeg_8 "ffprobe"} \
       ${lib.optionalString withVoiceDefectDetector "--set KADR_TTSQC_PYTHON ${python3ForKadr}/bin/python3"} \
       ${lib.optionalString (
         extraElectronFlags != [ ]

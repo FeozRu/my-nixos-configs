@@ -58,6 +58,33 @@ ttsqc держит веса и настройки рядом с собой и **
 `~/.local/share/kadr/ttsqc/` и переключает туда `KADR_TTSQC_MODELS` и
 `KADR_TTSQC_CONFIG`. Ваши правки там живут и не теряются при обновлении пакета.
 
+## Известное: ffmpeg зафиксирован на 8
+
+Приложение пишет граф фильтров в файл и передаёт его через
+`-filter_complex_script` на **каждом** экспорте, а не только на больших
+таймлайнах (иначе argv упирается в `MAX_ARG_STRLEN` — у ffmpeg есть лимит
+128 КБ на один аргумент).
+
+В ffmpeg 9 этой опции больше нет: её заменил общий синтаксис
+`-/filter_complex <файл>`. Симптом на 9.x — ни один экспорт с аудиодорожками
+не проходит:
+
+```
+ffmpeg exited 8: Unrecognized option 'filter_complex_script'.
+Error splitting the argument list: Option not found
+```
+
+Поэтому в PATH обёртки и в `KADR_FFMPEG`/`KADR_FFPROBE` стоит ffmpeg 8
+(`ffmpeg_8`), а не текущий `ffmpeg`. Обе переменные выставляются через
+`--set-default`, так что свой ffmpeg подсунуть всё ещё можно:
+
+```bash
+KADR_FFMPEG=/path/to/ffmpeg kadr
+```
+
+Когда апстрим перейдёт на `-/filter_complex`, пин можно снять (или заменить на
+`ffmpeg` без потери смысла).
+
 ## Известное: CUDA
 
 Редактор всегда передаёт детектору `--device cuda`, а whisperx и ctranslate2
