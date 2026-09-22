@@ -1,0 +1,31 @@
+--- a/python/ttsqc/asr.py
++++ b/python/ttsqc/asr.py
+@@ -20,8 +20,13 @@
+     """Аудио 16 кГц → слова с таймкодами и речевые интервалы VAD."""
+     from faster_whisper import WhisperModel
+ 
+-    model = WhisperModel(cfg["model"], device=cfg["device"],
+-                         compute_type=cfg["compute_type"])
++    device, compute_type = cfg["device"], cfg["compute_type"]
++    if device == "cuda" and not torch.cuda.is_available():
++        # NixOS: редактор всегда передаёт --device cuda, а int8_float16 есть
++        # только на GPU — на CPU-сборке разбор прежде падал на первом шаге.
++        device, compute_type = "cpu", "int8"
++    model = WhisperModel(cfg["model"], device=device,
++                         compute_type=compute_type)
+     segments, _info = model.transcribe(
+         audio,
+         language=cfg["language"],
+--- a/python/ttsqc/ctc.py
++++ b/python/ttsqc/ctc.py
+@@ -36,6 +36,10 @@
+ 
+     def __init__(self, device: str = "cuda", lang: str = "ru"):
+         from whisperx.alignment import load_align_model
++        # NixOS: whisperx вызывает .to("cuda") без проверки доступности, а
++        # редактор всегда передаёт --device cuda — без NVIDIA это падение.
++        if device == "cuda" and not torch.cuda.is_available():
++            device = "cpu"
+         self.device = device
+         self.model, meta = load_align_model(language_code=lang, device=device)
+         self.char2id = meta["dictionary"]

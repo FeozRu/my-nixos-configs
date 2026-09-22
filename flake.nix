@@ -66,6 +66,15 @@
 
       kadr = final: prev: {
         kadr = final.callPackage ./pkgs/kadr.nix { src = inputs.kadr; };
+
+        # Всё необязательное сразу: детектор дефектов озвучки (torch и т.п.) и
+        # CLI claude для встроенной панели. claude-code unfree — нужен
+        # allowUnfree = true (в common-system.nix он уже стоит).
+        kadr-full = final.callPackage ./pkgs/kadr.nix {
+          src = inputs.kadr;
+          withVoiceDefectDetector = true;
+          claudeCode = final.claude-code;
+        };
       };
 
       overlays = [
@@ -78,8 +87,15 @@
       };
     in
     {
-      packages.${system} = {
-        kadr = (import nixpkgs { inherit system; overlays = [ kadr ]; }).kadr;
+      packages.${system} = let
+        pkgs = import nixpkgs {
+          inherit system;
+          # kadr-full тянет unfree claude-code
+          config.allowUnfree = true;
+          overlays = [ kadr ];
+        };
+      in {
+        inherit (pkgs) kadr kadr-full;
       };
 
       nixosConfigurations.${hostName} = nixpkgs.lib.nixosSystem {

@@ -1,2 +1,6 @@
 temp-files/
 nix-presetup-commands-output/
+
+# симлинки `nix build` в корне репозитория
+/result
+/result-*

@@ -4,13 +4,15 @@
 #   * Node.js >= 20            — только на время сборки (nodejs ниже)
 #   * ffmpeg + ffprobe         — в PATH обёртки: импорт, аудиомикс, экспорт
 #   * python3 + faster-whisper — в PATH обёртки (withSpeechRecognition)
-#   * Claude Code CLI          — НЕ ставится: панель «Claude» просто не найдёт
-#                                `claude` в PATH и останется выключенной
+#   * Claude Code CLI          — claudeCode: панель «Claude» (по умолчанию нет)
 #   * сеть (один раз)          — workspace Remotion-фрагментов (~/kadr-fragments)
 #                                ставится самим приложением при первом фрагменте
 #   * ключ ElevenLabs          — вводится в приложении, хранится вне проекта
-#   * python >= 3.11 + torch   — не тянем (многогигабайтный torch); путь к своему
-#                                интерпретатору задаётся в настройках озвучки
+#   * python >= 3.11 + torch   — withVoiceDefectDetector: детектор дефектов озвучки
+#
+# Готовые наборы:
+#   kadr       — минимум: редактор + ffmpeg + распознавание речи
+#   kadr-full  — то же плюс детектор дефектов озвучки (torch) и CLI claude
 {
   lib,
   stdenv,
@@ -28,11 +30,15 @@
   python3,
   runCommand,
   src,
+  # CLI claude для встроенной панели. Передаётся явно, потому что пакет
+  # unfree: сам вызов `final.claude-code` требует allowUnfree = true.
+  claudeCode ? null,
   # Распознавание речи и авто-субтитры (scripts/transcribe.py через `python3`).
-  # Без них редактор работает, но эти кнопки честно откажутся.
   withSpeechRecognition ? true,
-  # Дополнительные бинарники в PATH обёртки (например, свой python с torch для
-  # детектора дефектов озвучки).
+  # Детектор дефектов озвучки: scripts/ttsqc_run.py, ему нужны torch, whisperx,
+  # scikit-learn и matplotlib.
+  withVoiceDefectDetector ? false,
+  # Дополнительные бинарники в PATH обёртки.
   extraRuntimeInputs ? [ ],
   # Дополнительные ключи Electron/Chromium, например
   # [ "--enable-features=VaapiVideoDecoder" ].
@@ -45,9 +51,19 @@ let
 
   # `python3` из nixpkgs (сейчас 3.14) — не случайный выбор: только эта ветка
   # python-пакетов реально собрана в cache.nixos.org, так что faster-whisper с
-  # зависимостями приезжает готовым. У python312Packages сборки нет, и ctranslate2
-  # под ним тянет torch как тестовую зависимость — это часы сборки C++.
-  whisperPython = python3.withPackages (ps: [ ps.faster-whisper ]);
+  # зависимостями (и torch тоже) приезжает готовым. У python312Packages сборки
+  # нет, и ctranslate2 под ним тянет torch как тестовую зависимость — это часы
+  # сборки C++, ровно то, на чём легко просидеть всю ночь.
+  pythonPackages = ps:
+    [ ps.faster-whisper ]
+    ++ lib.optionals withVoiceDefectDetector [
+      ps.torch
+      ps.whisperx # CTC-выравниватель (whisperx.alignment)
+      ps.scikit-learn
+      ps.matplotlib
+    ];
+
+  whisperPython = python3.withPackages pythonPackages;
 
   # Приложение зовёт голый `python3` (scripts/transcribe.py), поэтому
   # интерпретатор должен быть доступен ровно под этим именем.
@@ -69,7 +85,29 @@ let
     ffmpeg
     glib
     nodejs
-  ] ++ lib.optional withSpeechRecognition python3ForKadr ++ extraRuntimeInputs;
+  ]
+  ++ lib.optional withSpeechRecognition python3ForKadr
+  ++ lib.optional (claudeCode != null) claudeCode
+  ++ extraRuntimeInputs;
+
+  # ttsqc держит веса и настройки рядом с собой, а пишет в них («Переобучить»
+  # перезаписывает scorer.pkl). Store только для чтения, поэтому при первом
+  # запуске копируем их в каталог пользователя — иначе и переобучение, и
+  # правка [asr] под свою машину упираются в read-only.
+  seedScript = lib.optionalString withVoiceDefectDetector ''
+    # ttsqc держит веса и настройки рядом с пакетом и пишет в них («Переобучить»
+    # перезаписывает scorer.pkl), а store в Nix только для чтения. Копируем их в
+    # каталог пользователя и переключаем туда переменные ttsqc: правки там живут
+    # дальше и не теряются при обновлении пакета.
+    data="''${XDG_DATA_HOME:-$HOME/.local/share}/kadr/ttsqc"
+    mkdir -p "$data/models"
+    cp -nr @out@/share/kadr/python/models/. "$data/models/" 2>/dev/null || true
+    [ -e "$data/ttsqc.toml" ] || cp @out@/share/kadr/python/ttsqc.toml "$data/ttsqc.toml"
+    # store отдаёт файлы 0444, а «Переобучить» перезаписывает scorer.pkl на месте
+    chmod -R u+w "$data"
+    export KADR_TTSQC_MODELS="$data/models"
+    export KADR_TTSQC_CONFIG="$data/ttsqc.toml"
+  '';
 in
 buildNpmPackage rec {
   pname = "kadr";
@@ -93,6 +131,14 @@ buildNpmPackage rec {
     ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
     NODE_OPTIONS = "--max-old-space-size=4096";
   };
+
+  # Сам ttsqc считает CPU штатным режимом («на CPU медленно, но работает»), но
+  # на деле редактор всегда передаёт --device cuda, а ни whisperx, ни ctranslate2
+  # доступность CUDA не проверяют: выравниватель падает на .to("cuda"), ASR — на
+  # compute_type int8_float16. На машине без NVIDIA детектор из-за этого не
+  # запускается вообще, поэтому выбор устройства доводим до конца одним патчем.
+  # На машине с CUDA обе вставки не срабатывают.
+  patches = lib.optional withVoiceDefectDetector ./kadr-cpu-fallback.patch;
 
   nativeBuildInputs = [
     copyDesktopItems
@@ -146,14 +192,22 @@ buildNpmPackage rec {
 
     install -Dm644 ${./kadr.svg} $out/share/icons/hicolor/scalable/apps/kadr.svg
 
-    makeWrapper ${lib.getExe electron_42} $out/bin/kadr \
+    makeWrapper ${lib.getExe electron_42} $out/bin/.kadr-wrapped \
       --add-flags $out/share/kadr \
       --set-default ELECTRON_IS_DEV 0 \
       --prefix PATH : ${lib.makeBinPath runtimeInputs} \
+      ${lib.optionalString withVoiceDefectDetector "--set KADR_TTSQC_PYTHON ${python3ForKadr}/bin/python3"} \
       ${lib.optionalString (
         extraElectronFlags != [ ]
       ) "--add-flags ${lib.escapeShellArg (lib.concatStringsSep " " extraElectronFlags)}"} \
       --add-flags "\''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}"
+
+    # $out/bin/kadr — обёртка поверх .kadr-wrapped: подготавливает данные ttsqc.
+    # Замены идут в два прохода нарочно: текст, подставленный вместо @seed@,
+    # сам содержит @out@, а одна замена его уже не перечитывает.
+    install -Dm755 ${./kadr-launcher.sh} $out/bin/kadr
+    substituteInPlace $out/bin/kadr --replace-fail '@seed@' ${lib.escapeShellArg seedScript}
+    substituteInPlace $out/bin/kadr --subst-var out
 
     runHook postInstall
   '';
@@ -172,6 +226,10 @@ buildNpmPackage rec {
       startupWMClass = "kadr";
     })
   ];
+
+  passthru = {
+    inherit python3ForKadr;
+  };
 
   meta = {
     inherit (packageJson) description;
