@@ -133,9 +133,10 @@ in
     defaultApplications = {
     "inode/directory" = "yazi.desktop";
 
-    "x-scheme-handler/http" = "vivaldi-stable.desktop";
-    "x-scheme-handler/https" = "vivaldi-stable.desktop";
-    "text/html" = "vivaldi-stable.desktop";
+    # Zen из flake-модуля homeModules.beta отдаёт desktop-файл zen-beta.desktop.
+    "x-scheme-handler/http" = "zen-beta.desktop";
+    "x-scheme-handler/https" = "zen-beta.desktop";
+    "text/html" = "zen-beta.desktop";
 
     "x-scheme-handler/mailto" = "thunderbird.desktop";
     "message/rfc822" = "thunderbird.desktop";
