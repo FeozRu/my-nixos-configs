@@ -6,6 +6,7 @@
     ../modules/nixos/common-system.nix
     ../modules/nixos/graphics-amd.nix
     ../modules/nixos/packages.nix
+    ../modules/nixos/containers.nix
     ../modules/nixos/flatpak.nix
     ../modules/nixos/mobile-flashing.nix
   ];

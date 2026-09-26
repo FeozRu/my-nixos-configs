@@ -95,7 +95,13 @@
     '')
 
 
-    pkgs-stable.moonlight-qt
+    # ВАЖНО: moonlight-qt берём из unstable (pkgs), а не из pkgs-stable.
+    # hardware.graphics ставит DRI-драйверы из unstable (mesa 26.x), чей
+    # VA-API-драйвер radeonsi_drv_video.so экспортирует только __vaDriverInit_1_24.
+    # libva 2.22 из стабильного пина такую версию не умеет и VA-API падает с
+    # "has no function __vaDriverInit_1_0" -> Moonlight пишет "No functioning
+    # hardware accelerated video decoder". libva 2.24.1 из unstable совместима.
+    moonlight-qt
     pkgs-stable.lutris
     qbittorrent
 
