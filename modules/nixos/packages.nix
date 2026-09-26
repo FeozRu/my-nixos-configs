@@ -55,7 +55,7 @@
 
     clang cmake ninja pkg-config gnumake gcc
 
-    rustc cargo rustfmt clippy rust-analyzer nixd trunk
+    rustc cargo rustfmt clippy rust-analyzer nixd trunk tailwindcss
     llvm lldb openssl llvmPackages.lld llvmPackages.bintools
 
     # GPUI / Zed UI framework — native Linux dependencies (link + runtime)
