@@ -78,11 +78,11 @@
     "kadr": {
       "flake": false,
       "locked": {
-        "lastModified": 1789846990,
-        "narHash": "sha256-wS/VENgsbrymPFApMPxoqFrshZ7M/RNua/GfrFkEJas=",
+        "lastModified": 1790501600,
+        "narHash": "sha256-eTC2TWv2K5DnTLqwGUnUS5nHUBgUtfibnd9au1UGBaA=",
         "owner": "HelpFreedom",
         "repo": "kadr",
-        "rev": "460dfd01483848d10237361181fc3bde86adae9c",
+        "rev": "4b6f675c7c75235d69d41f73d3f15f58595c23d6",
         "type": "github"
       },
       "original": {
@@ -109,11 +109,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1790323409,
-        "narHash": "sha256-VVTPf+Hyd5ebpjBMHmrLMSBIeW6ls48Bqtosj7CNKLA=",
+        "lastModified": 1790463110,
+        "narHash": "sha256-hKlVl12B1dF0Q5vd9dY3lIJM5mFGWYSlXwSLAqHZ1+s=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "e94cb152ed51bd6e24eb4a41f1460252beb52cd2",
+        "rev": "e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa",
         "type": "github"
       },
       "original": {

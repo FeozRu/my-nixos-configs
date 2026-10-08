@@ -96,6 +96,10 @@
         };
       in {
         inherit (pkgs) kadr kadr-full;
+
+        # Кастомный клиент Moonlight (форк Nonary) для Vibepollo — VRR, PyroWave,
+        # передача микрофона. Ставится отдельно от стокового moonlight-qt.
+        moonlight-vrr = pkgs.callPackage ./pkgs/moonlight-vrr.nix { };
       };
 
       nixosConfigurations.${hostName} = nixpkgs.lib.nixosSystem {

@@ -102,6 +102,13 @@
     # "has no function __vaDriverInit_1_0" -> Moonlight пишет "No functioning
     # hardware accelerated video decoder". libva 2.24.1 из unstable совместима.
     moonlight-qt
+
+    # Кастомный клиент Moonlight (форк Nonary, ветка VRR) — нужен для связки с
+    # хостом Vibepollo: VRR-пейсинг, кодек PyroWave, передача микрофона.
+    # Ставится под отдельным именем `moonlight-vrr`, чтобы не конфликтовать со
+    # стоковым moonlight-qt выше. Упаковано как AppImage (см. pkgs/moonlight-vrr.nix).
+    (pkgs.callPackage ../../pkgs/moonlight-vrr.nix { })
+
     pkgs-stable.lutris
     qbittorrent
 
