@@ -1,82 +1,65 @@
-{ lib
-, fetchurl
-, makeWrapper
-, makeDesktopItem
-, appimage-run
-, stdenvNoCC
-}:
+{ pkgs }:
 
-# Кастомный клиент Moonlight — форк Nonary/moonlight-qt (ветка VRR).
-# Он нужен, чтобы работать с хостом Vibepollo и получить то, чего нет в
-# стоковом moonlight-qt из nixpkgs: VRR-пейсинг, кодек PyroWave и передачу
-# микрофона на хост.
+# Кастомный клиент Moonlight — форк Nonary/moonlight-qt (ветка VRR) для Vibepollo:
+# VRR-пейсинг, кодек PyroWave, передача микрофона.
 #
-# Почему AppImage, а не сборка из исходников:
-#   * апстрим-форк не собирается из nixpkgs одним override (свои сабмодули,
-#     libplacebo/Vulkan-рендер, SDL3, USB-хаптика DualSense);
-#   * автор форка публикует готовые AppImage — это путь с минимальным риском.
-# Обёртка идёт через `appimage-run` (NixOS FHS+bwrap окружение) — тот же
-# приём, что у pkgs/ubports-installer.nix.
+# Собираем из ИСХОДНИКОВ, а не из AppImage: у AppImage нет плагина Wayland
+# (только xcb), поэтому клиент работал под X11 и не мог перехватывать системные
+# клавиши (Mod, Alt+Tab) через keyboard-shortcuts-inhibit. Сборка на nixpkgs-Qt
+# (6.11) + qtwayland даёт нативный Wayland, а конфиг
+# (~/.config/Moonlight Game Streaming Project) общий со стоковым moonlight-qt —
+# спаривание с хостом и настройки (capturesyskeys и т.п.) сохраняются.
 #
-# Отдельное имя `moonlight-vrr` + собственный .desktop, чтобы не конфликтовать
-# со стоковым `moonlight-qt` (внутренний desktop-exec у обоих `moonlight`).
-stdenvNoCC.mkDerivation rec {
-  pname = "moonlight-vrr";
-  version = "6.1.0-vrr18";
-
-  src = fetchurl {
-    url = "https://github.com/Nonary/moonlight-qt/releases/download/v${version}/Moonlight-${version}-x86_64.AppImage";
-    hash = "sha256-W1mS6w2dZSjKbbg8M9o79svs6g9aj3ubNNzV0i0T9Aw=";
-  };
-
-  icon = fetchurl {
-    url = "https://raw.githubusercontent.com/Nonary/moonlight-qt/v${version}/app/res/moonlight.svg";
-    hash = "sha256-b9DuT+W0qtWrql1cmsuffRvaCrrf6dFYIRXem0uhaqI=";
-  };
-
-  desktopItem = makeDesktopItem {
-    name = pname;
+# База — pkgkgs.moonlight-qt: у этой деривации уже есть все нужные зависимости
+# (qt6.qtwayland, libplacebo, vulkan-headers, ffmpeg_8, libva, libvdpau, wayland,
+# SDL2, libopus…), форк отличается только исходником (добавляется подкаталог
+# pyrowave и обновлённые сабмодули).
+let
+  desktopItem = pkgs.makeDesktopItem {
+    name = "moonlight-vrr";
     desktopName = "Moonlight VRR";
     genericName = "Game streaming client";
     comment = "VRR Moonlight client (Nonary fork) for Vibepollo/Sunshine hosts";
-    exec = pname;
-    icon = pname;
+    exec = "moonlight-vrr";
+    icon = "moonlight-vrr";
     categories = [ "Game" "Network" "RemoteAccess" ];
     keywords = [ "moonlight" "vibepollo" "sunshine" "gamestream" "vrr" "microphone" ];
     startupNotify = false;
   };
+in
+(pkgs.moonlight-qt.overrideAttrs (old: rec {
+  pname = "moonlight-vrr";
+  version = "6.1.0-vrr18";
 
-  nativeBuildInputs = [ makeWrapper ];
+  src = pkgs.fetchFromGitHub {
+    owner = "Nonary";
+    repo = "moonlight-qt";
+    tag = "v${version}";
+    hash = "sha256-Msv+rIv6KMuqa8tMP9yizpI8BdH2pishsHgJ4tKE2nw=";
+    fetchSubmodules = true;
+  };
 
-  dontUnpack = true;
+  # Патч апстрима (сборка под Xcode < 14) к форку не относится.
+  patches = [ ];
 
-  installPhase = ''
-    runHook preInstall
+  postInstall = (old.postInstall or "") + ''
+    # Переименовываем выводы, чтобы не пересекаться со стоковым moonlight-qt в
+    # systemPackages (иначе коллизия одинаковых путей в профиле).
+    mv $out/bin/moonlight $out/bin/moonlight-vrr
 
-    mkdir -p $out/bin $out/share/${pname}
-    install -m755 "$src" "$out/share/${pname}/${pname}.AppImage"
+    rm -f $out/share/applications/com.moonlight_stream.Moonlight.desktop
+    cp ${desktopItem}/share/applications/moonlight-vrr.desktop \
+       $out/share/applications/moonlight-vrr.desktop
 
-    # AppImage тащит собственную (не патченную NixOS) libva, поэтому её дефолтный
-    # поиск драйверов не видит /run/opengl-driver/lib/dri — задаём путь явно,
-    # иначе ломается аппаратное декодирование VA-API.
-    # (Vulkan ICD при этом находится сам: appimage-run кладёт
-    #  /run/opengl-driver/share в XDG_DATA_DIRS.)
-    makeWrapper ${appimage-run}/bin/appimage-run $out/bin/${pname} \
-      --add-flags "$out/share/${pname}/${pname}.AppImage" \
-      --set LIBVA_DRIVERS_PATH /run/opengl-driver/lib/dri
+    mv $out/share/icons/hicolor/scalable/apps/moonlight.svg \
+       $out/share/icons/hicolor/scalable/apps/moonlight-vrr.svg
 
-    install -Dm644 "$icon" "$out/share/icons/hicolor/scalable/apps/${pname}.svg"
-    install -Dm644 "${desktopItem}/share/applications/${pname}.desktop" \
-      "$out/share/applications/${pname}.desktop"
-
-    runHook postInstall
+    mv $out/share/metainfo/com.moonlight_stream.Moonlight.appdata.xml \
+       $out/share/metainfo/moonlight-vrr.appdata.xml
   '';
 
-  meta = with lib; {
+  meta = old.meta // {
     description = "Moonlight VRR client (Nonary fork) for Vibepollo/Sunshine hosts";
-    homepage = "https://github.com/Nonary/moonlight-qt";
-    license = licenses.gpl3Only;
-    platforms = [ "x86_64-linux" ];
-    mainProgram = pname;
+    mainProgram = "moonlight-vrr";
   };
-}
+}))

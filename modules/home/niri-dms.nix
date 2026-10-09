@@ -28,6 +28,20 @@
     include "dms/windowrules.kdl"
     include "dms/wpblur.kdl"
 
+    // niri с 25.11 включает recent-windows с дефолтными биндами Alt+Tab / Mod+Tab
+    // (и Alt+` / Mod+`), и Alt+Tab перехватывался локально — его нельзя было
+    // отправить на хост в Moonlight/Vibepollo. Наличие секции binds очищает все
+    // дефолтные MRU-бинды (niri wiki: Configuration: Recent-Windows), поэтому здесь
+    // их нужно перечислить заново. Оставляем только Mod+* — Alt+Tab освобождён
+    // для приложения. Узел recent-windows из dms/alttab.kdl при этом мержится
+    // без конфликта.
+    recent-windows {
+        binds {
+            Mod+Tab       { next-window; }
+            Mod+Shift+Tab { previous-window; }
+        }
+    }
+
     input {
       focus-follows-mouse max-scroll-amount="1%"
       keyboard {
