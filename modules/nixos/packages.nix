@@ -71,6 +71,13 @@
 
     wireguard-tools networkmanager-openvpn
 
+    # Диагностика DNS и сети
+    dnsutils # dig, nslookup, host (bind.dnsutils)
+    ldns # drill
+    doggo # современный DNS-клиент с цветным выводом
+    mtr # трассировка с разрешением имён хостов
+    whois # регистратор, NS и статус домена
+
     gparted btrfs-progs efibootmgr xhost
 
     waybar swaynotificationcenter fuzzel awww xwayland-satellite
