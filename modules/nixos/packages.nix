@@ -42,6 +42,7 @@
     onlyoffice-desktopeditors obsidian
 
     zed-editor-fhs
+    zcode # Z.ai GLM ADE (flake-input zcode-nix, официальный .deb)
     dbeaver-bin
     bruno
     pkgs.nodejs

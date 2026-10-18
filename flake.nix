@@ -35,6 +35,16 @@
       };
     };
 
+    # ZCode (Z.ai GLM ADE) — пакет из официального .deb + Home Manager-модуль.
+    # Обновление: nix flake update zcode-nix
+    zcode-nix = {
+      url = "github:FWW321/zcode-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        home-manager.follows = "home-manager";
+      };
+    };
+
   };
 
   outputs = { nixpkgs, nixpkgs-stable, home-manager, nix-flatpak, dms, ... }@inputs:
@@ -80,6 +90,7 @@
       overlays = [
         vivaldiLibPath
         kadr
+        inputs.zcode-nix.overlays.default
       ];
 
       specialArgs = {

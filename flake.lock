@@ -148,7 +148,31 @@
         "nix-flatpak": "nix-flatpak",
         "nixpkgs": "nixpkgs",
         "nixpkgs-stable": "nixpkgs-stable",
+        "zcode-nix": "zcode-nix",
         "zen-browser": "zen-browser"
+      }
+    },
+    "zcode-nix": {
+      "inputs": {
+        "home-manager": [
+          "home-manager"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792226499,
+        "narHash": "sha256-jie8sC8W0mOmlzWwg0dzYcK/J7TuxUsFN4UwYmBpDNI=",
+        "owner": "FWW321",
+        "repo": "zcode-nix",
+        "rev": "147a0a2ac31a7ee3f75545a077856a638623dd38",
+        "type": "github"
+      },
+      "original": {
+        "owner": "FWW321",
+        "repo": "zcode-nix",
+        "type": "github"
       }
     },
     "zen-browser": {
