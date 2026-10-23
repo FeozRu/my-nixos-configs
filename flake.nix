@@ -87,9 +87,21 @@
         };
       };
 
+      # sphinx-hook в nixpkgs под __structuredAttrs читает только первый элемент
+      # sphinxBuilders (eval "__sphinxBuilders=($sphinxBuilders)"), поэтому khal
+      # собирает html, но не создаёт объявленный man-выход и падает на
+      # «failed to produce output path for output 'man'». Пока чинят upstream,
+      # передаём билдеры строкой. khal тянется модулем dms (enableCalendarEvents).
+      khalSphinxBuilders = final: prev: {
+        khal = prev.khal.overrideAttrs (_: {
+          sphinxBuilders = "html man";
+        });
+      };
+
       overlays = [
         vivaldiLibPath
         kadr
+        khalSphinxBuilders
         inputs.zcode-nix.overlays.default
       ];
 
