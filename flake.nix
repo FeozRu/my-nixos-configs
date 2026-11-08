@@ -98,10 +98,20 @@
         });
       };
 
+      # Локальный фикс Vesktop: падение пикера качества на Wayland молча убивало
+      # демонстрацию экрана (AbortError: Invalid capture constraints). Патч
+      # отдаёт захват напрямую при отказе пикера. См. pkgs/vesktop-screenshare-picker-fallback.patch
+      vesktopScreenshareFix = final: prev: {
+        vesktop = prev.vesktop.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [ ./pkgs/vesktop-screenshare-picker-fallback.patch ];
+        });
+      };
+
       overlays = [
         vivaldiLibPath
         kadr
         khalSphinxBuilders
+        vesktopScreenshareFix
         inputs.zcode-nix.overlays.default
       ];
 

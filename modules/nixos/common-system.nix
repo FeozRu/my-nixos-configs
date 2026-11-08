@@ -294,6 +294,12 @@ in
       # vesktop still depends on EOL electron_40
       "electron-40.10.5"
     ];
+    # gtk2 помечен broken (удаление из nixpkgs к NixOS 27.05), но в замыкании
+    # системы его нет — он нужен только на этапе сборки lutris и
+    # onlyoffice-desktopeditors. Пока они не переедут на gtk3, оценка их
+    # дериваций падает с «Refusing to evaluate» — понижаем до предупреждения.
+    # Когда nixpkgs удалит gtk2 совсем, здесь понадобится апдейт обоих пакетов.
+    problems.handlers."gtk+".broken = "warn";
   };
 
   services.openssh.enable = true;

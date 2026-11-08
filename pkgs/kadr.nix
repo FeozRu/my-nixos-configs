@@ -18,7 +18,12 @@
   stdenv,
   buildNpmPackage,
   copyDesktopItems,
-  electron_42,
+  # Новейшая ветка electron с поддержкой безопасности. Апстрим пинит ^42, но та
+  # уже EOL: nixpkgs помечает такие ветки insecure и сборка системы падает
+  # («Refusing to evaluate package … marked as insecure» — так случилось с
+  # electron_40 и electron_42). При такой ошибке поднимайте major на актуальную
+  # ветку — native-модуль (node-pty) пересобирается по headers отсюда же.
+  electron_45,
   ffmpeg_8,
   glib,
   importNpmLock,
@@ -174,7 +179,7 @@ buildNpmPackage rec {
     chmod -R u+w node_modules/node-pty
     (
       cd node_modules/node-pty
-      HOME="$(mktemp -d)" node-gyp rebuild --nodedir=${electron_42.headers}
+      HOME="$(mktemp -d)" node-gyp rebuild --nodedir=${electron_45.headers}
     )
 
     npm run build
@@ -200,7 +205,7 @@ buildNpmPackage rec {
 
     install -Dm644 ${./kadr.svg} $out/share/icons/hicolor/scalable/apps/kadr.svg
 
-    makeWrapper ${lib.getExe electron_42} $out/bin/.kadr-wrapped \
+    makeWrapper ${lib.getExe electron_45} $out/bin/.kadr-wrapped \
       --add-flags $out/share/kadr \
       --set-default ELECTRON_IS_DEV 0 \
       --prefix PATH : ${lib.makeBinPath runtimeInputs} \
