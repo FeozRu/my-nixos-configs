@@ -8,6 +8,13 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-25.11";
 
+    # Временный инпут: ревизия nixpkgs#584169 (vencord 1.15.16, фикс серого
+    # окна vesktop). Из нашего пина nixos-unstable vencord 1.15.16 не собирается
+    # (в lockfile новый pnpm-12-формат, наш pnpm-хук от 5 ноября его не ест).
+    # Убрать, когда unstable заберёт этот PR, вместе со строкой в оверлее
+    # vesktopSystemVencord. Инпут прибит к полному sha — nix flake update его не тронет.
+    nixpkgs-pr584169.url = "github:NixOS/nixpkgs/308f3ebb819769d0288a1855b917009cb81354b6";
+
     dms = {
       url = "github:AvengeMedia/DankMaterialShell/stable";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -98,20 +105,25 @@
         });
       };
 
-      # Локальный фикс Vesktop: падение пикера качества на Wayland молча убивало
-      # демонстрацию экрана (AbortError: Invalid capture constraints). Патч
-      # отдаёт захват напрямую при отказе пикера. См. pkgs/vesktop-screenshare-picker-fallback.patch
-      vesktopScreenshareFix = final: prev: {
-        vesktop = prev.vesktop.overrideAttrs (old: {
-          patches = (old.patches or [ ]) ++ [ ./pkgs/vesktop-screenshare-picker-fallback.patch ];
-        });
+      # Vesktop при старте грузит Vencord из ~/.config/vesktop/sessionData/vencordFiles,
+      # а если его там нет — качает devbuild с GitHub-ассетов. Когда GitHub отдаёт
+      # 504 (или файлы устарели — так и случилось: полугодовой Vencord не понял
+      # обновлённый веб-клиент Discord), vesktop вечно висит на «Loading Vesktop...».
+      # Вшиваем системный Vencord прямо в сборку (withSystemVencord) — бамп 1.15.16
+      # берём из ревизии nixpkgs#584169, т.к. из нашего пина nixos-unstable он
+      # пока не собирается. Когда unstable заберёт PR: убрать инпут
+      # nixpkgs-pr584169 и строку про vencord ниже; withSystemVencord оставить —
+      # обновление Vencord тогда только через nixpkgs, без ходок в GitHub при старте.
+      vesktopSystemVencord = final: prev: {
+        vencord = inputs.nixpkgs-pr584169.legacyPackages.${prev.system}.vencord;
+        vesktop = prev.vesktop.override { withSystemVencord = true; };
       };
 
       overlays = [
         vivaldiLibPath
         kadr
         khalSphinxBuilders
-        vesktopScreenshareFix
+        vesktopSystemVencord
         inputs.zcode-nix.overlays.default
       ];
 
